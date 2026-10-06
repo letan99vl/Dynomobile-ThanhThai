@@ -1533,7 +1533,7 @@ cfgIds.forEach(function(id){$(id).addEventListener('change',function(){save(fals
  'use strict';
  var mount=document.getElementById('livePcMount');
  if(!mount)return;
- function getText(path){return fetch(path+'?v=pc2').then(function(r){if(!r.ok)throw new Error(path+' '+r.status);return r.text()})}
+ function getText(path){return fetch(path+'?v=37tsr-gauge-20261006-3').then(function(r){if(!r.ok)throw new Error(path+' '+r.status);return r.text()})}
  Promise.all([
    getText('live/head.html'),getText('live/rpm.html'),getText('live/kpis.html'),getText('live/speed.html'),getText('live/info.html')
  ]).then(function(p){
