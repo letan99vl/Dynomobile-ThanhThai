@@ -5,7 +5,7 @@
 - Repository: letan99vl/Dynomobile-ThanhThai
 - GitHub Pages: https://letan99vl.github.io/Dynomobile-ThanhThai/
 - Current visible web PB: **PB 1.004**
-- Main branch current handoff baseline: **ba14b204c9c18edd80c15dd512a62d3faa53bc27**
+- Main branch current handoff baseline: **d1dd7169a7ad58efaa3931e35434c705b6585f12**
 - Deployment mode: GitHub Pages **Deploy from branch -> main / root**.
 - The old duplicate custom Pages workflow was removed. Do not add a second Pages deploy workflow unless intentionally changing the deployment model.
 
@@ -264,3 +264,65 @@ Do not spend time on the background unless the user asks to resume it.
 - Update this handoff file after meaningful architecture/firmware/UI changes.
 - Check newest GitHub Pages run after commits.
 - Rapid commits can supersede/cancel older Pages runs; only the newest head matters.
+
+
+---
+
+# iOS native app / IPA
+A native iOS shell now exists in `ios/`, following the proven BLINK REDLEO pattern but simplified for 37TSR Dyno.
+
+Architecture:
+- Swift native shell
+- WKWebView
+- Native CoreBluetooth bridge
+- Local bundled 37TSR UI
+- No dependency on Safari/Bluefy Web Bluetooth for the installed iOS app
+
+Identity:
+- Product: `37TSR Dyno`
+- Bundle ID: `vn.tsr37.dyno`
+- Version: `1.0 (1)`
+- Minimum iOS: `15.0`
+- Target: iPhone + iPad
+- Current bundled UI: `PB 1.004`
+
+Important iOS files:
+- `ios/project.yml`
+- `ios/prepare_xcode_project.sh`
+- `ios/TSRDyno/AppDelegate.swift`
+- `ios/TSRDyno/MainViewController.swift`
+- `ios/TSRDyno/BLEBridge.swift`
+- `ios/TSRDyno/Info.plist`
+- `ios/TSRDyno/PrivacyInfo.xcprivacy`
+- `ios/TSRDyno/LaunchScreen.storyboard`
+- `ios/TSRDyno/Resources/native_bridge_ios.js`
+- `ios/TSRDyno/Resources/ios_fullscreen_fix.js`
+- `ios/tools/prepare_web.py`
+- `ios/tools/make_icons.py`
+
+BLE contract used by iOS:
+- Service: `d7a10001-7c35-4a6d-9f0e-2ea3117f1000`
+- LIVE: `d7a10002-7c35-4a6d-9f0e-2ea3117f1000`
+- COMMAND: `d7a10003-7c35-4a6d-9f0e-2ea3117f1000`
+- STATUS: `d7a10005-7c35-4a6d-9f0e-2ea3117f1000`
+
+Build workflow:
+- `.github/workflows/build-ios-ipa.yml`
+- macOS runner
+- XcodeGen
+- unsigned Release iphoneos build
+- artifact name: `37TSR-Dyno-iOS-PB-1.004-unsigned`
+
+Verified successful workflow run:
+- Run ID: `37438042617`
+- Head: `d1dd7169a7ad58efaa3931e35434c705b6585f12`
+- Xcode build: success
+- IPA packaging: success
+- Artifact upload: success
+
+Unsigned IPA:
+- Intended for sideload/signing workflows.
+- It is not directly uploadable to TestFlight/App Store Connect without Apple distribution signing.
+- For TestFlight, add the Apple signing/upload workflow or archive/sign in Xcode using the owner's Apple Developer Team.
+
+The iOS bundle preparation script copies the current web UI and inlines the LIVE fragments so WKWebView does not depend on local `fetch(file://...)`.
