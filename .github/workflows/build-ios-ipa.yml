@@ -43,7 +43,7 @@ jobs:
           test -n "$APP_PATH"
           INDEX_PATH="$(find "$APP_PATH" -name index.html -type f -print -quit)"
           test -n "$INDEX_PATH"
-          grep -q "PB 1.004" "$INDEX_PATH"
+          grep -Eq "PB[[:space:]]+[0-9]+\.[0-9]+" "$INDEX_PATH"
           echo "Built app: $APP_PATH"
           echo "Bundled UI: $INDEX_PATH"
 
@@ -55,7 +55,7 @@ jobs:
       - name: Upload unsigned IPA
         uses: actions/upload-artifact@v4
         with:
-          name: 37TSR-Dyno-iOS-PB-1.004-unsigned
+          name: 37TSR-Dyno-iOS-current-unsigned
           path: ios/37TSR-Dyno-unsigned.ipa
           if-no-files-found: error
           retention-days: 30
