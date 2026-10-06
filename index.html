@@ -606,7 +606,7 @@ body{position:relative!important}
   z-index:1!important;
   background:
     linear-gradient(rgba(255,255,255,.32),rgba(255,255,255,.32)),
-    url("./assets/37tsr-exhaust-bg.webp?v=4") center 53% / min(76vw,980px) auto no-repeat fixed!important;
+    url("./assets/37tsr-exhaust-bg.webp?v=5") center 53% / min(76vw,980px) auto no-repeat fixed!important;
   background-blend-mode:normal,multiply!important;
 }
 header{position:relative;z-index:3}
@@ -629,7 +629,54 @@ main,.chartpage,#settings,#test201,#live{background:transparent!important}
   #app{
     background:
       linear-gradient(rgba(255,255,255,.36),rgba(255,255,255,.36)),
-      url("./assets/37tsr-exhaust-bg.webp?v=4") center 54% / 92vw auto no-repeat fixed!important;
+      url("./assets/37tsr-exhaust-bg.webp?v=5") center 54% / 92vw auto no-repeat fixed!important;
+  }
+}
+</style>
+
+<style id="37tsr-live-exhaust-watermark">
+#app{
+  background:
+    linear-gradient(rgba(255,255,255,.18),rgba(255,255,255,.18)),
+    url("./assets/37tsr-exhaust-bg.webp?v=5") center 56% / min(82vw,1050px) auto no-repeat fixed!important;
+}
+#live{
+  position:relative!important;
+  isolation:isolate!important;
+  overflow:hidden!important;
+}
+#live::before{
+  content:"";
+  position:absolute;
+  inset:34px 0 28px 0;
+  z-index:-1;
+  pointer-events:none;
+  background:url("./assets/37tsr-exhaust-bg.webp?v=5") center 58% / min(72vw,900px) auto no-repeat;
+  opacity:.48;
+  filter:grayscale(.10) contrast(1.02);
+}
+#live .live-monitor-head,
+#live .live-info-strip{
+  background:rgba(255,255,255,.34)!important;
+  -webkit-backdrop-filter:blur(3px)!important;
+  backdrop-filter:blur(3px)!important;
+}
+#live .live-kpi{
+  background:rgba(255,255,255,.12)!important;
+  -webkit-backdrop-filter:blur(2px)!important;
+  backdrop-filter:blur(2px)!important;
+}
+#live .live-arc-card{
+  background:rgba(255,255,255,.08)!important;
+  -webkit-backdrop-filter:blur(1px)!important;
+  backdrop-filter:blur(1px)!important;
+}
+#live .classic-face{fill:rgba(255,255,255,.07)!important}
+#live .classic-inner{fill:rgba(255,255,255,.025)!important}
+@media(max-width:900px){
+  #live::before{
+    background-size:92vw auto;
+    opacity:.42;
   }
 }
 </style>
