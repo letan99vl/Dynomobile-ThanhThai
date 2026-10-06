@@ -229,7 +229,7 @@ main{display:none;min-height:0;overflow:hidden}.page.on{display:block;height:100
 #settings .settingsgrid{overflow:visible!important;min-height:max-content}
 #settings .settingsgrid .card{overflow:visible!important;touch-action:auto!important}
 html.android-app #settings,body.android-app #settings{overflow-y:scroll!important}
-</style>\n
+</style>
 <style id="bt-speed-orange-v1">
 :root{--red:#ff6a00;--orange:#ff9d00;--green:#39d98a;--blue:#4da3ff;--bg:#050505;--panel:#0b0b0c;--line:#2c211a;--text:#f7f7f7;--muted:#9d948d}
 html,body,#app{background:#050505}
@@ -1297,7 +1297,7 @@ nav button{
 <div id="exhaustBgLayer" aria-hidden="true"></div>
 <div id="app">
 <header>
- <div class="brand"><b>37TSR</b> <span>DYNO</span> <small id="buildTag" style="font:800 7px Arial;color:#555;margin-left:4px;white-space:nowrap">2T · PB 1.004</small></div>
+ <div class="brand"><b>37TSR</b> <span>DYNO</span> <small id="buildTag" style="font:800 7px Arial;color:#555;margin-left:4px;white-space:nowrap">2T · PB 1.005</small></div>
  <nav>
   <button data-page="live" class="on">LIVE</button>
   <button data-page="power">HP/TOR</button>
@@ -1419,7 +1419,8 @@ nav button{
    <label class="setline"><span>Vehicle inertia J</span><input id="rollerJ" type="number" step=".01" value="1.73"></label>
    <label class="setline"><span>Max RPM display</span><input id="maxRpm" type="number" value="16000"></label>
    <label class="setline"><span>Max speed display</span><input id="maxSpeed" type="number" value="160"></label>
-  </section>\n<section class="card"><h3>ENGINE RPM</h3>
+  </section>
+<section class="card"><h3>ENGINE RPM</h3>
    <label class="setline"><span>Ignition cycle</span><select id="ignitionCycle"><option value="360">360° · 1 pulse/rev</option><option value="720">720° · 1 pulse/2 rev</option></select></label>
    <label class="setline"><span>RPM pulse filter (us)</span><input id="rpmFilterUs" type="number" min="50" max="10000" step="50" value="250"></label>
    <p class="note">Use 720° when the RPM pickup sees one ignition pulse every two crank revolutions. RPM pulse filter is the VIP ENGINE_MIN_PERIOD_US value: 250 us is the original VIP setting; larger values reject closer pickup pulses. The value is stored in the ESP32.</p>
