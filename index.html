@@ -429,6 +429,7 @@ main,.chartpage,#settings,#test201{background:#f4f4f2!important}
 #appNumPad{background:#fff!important;border-color:#111!important;box-shadow:0 10px 40px rgba(0,0,0,.25)!important}
 .app-np-key,#appNumPadHideTop{background:#fff!important;color:#111!important;border-color:#111!important}
 .app-np-key.save{background:#111!important;color:#fff!important}
+</style>
 
 <style id="37tsr-signal-colors-v2">
 /* 37TSR fixed signal palette */
@@ -439,10 +440,8 @@ main,.chartpage,#settings,#test201{background:#f4f4f2!important}
 .mobile-chart-legend .erpm:before{background:#facc15!important}
 .mobile-chart-legend .spd:before{background:#3b82f6!important}
 #liveRpmArc .classic-value{fill:#facc15!important}
-#liveRpmArc .classic-needle{stroke:#facc15!important}
 #liveSpeedArc .classic-value{fill:#3b82f6!important}
-#liveSpeedArc .classic-needle{stroke:#3b82f6!important}
-</style>
+#liveRpmArc .classic-needle,#liveSpeedArc .classic-needle{stroke:#111!important}
 </style>
 
 <style id="37tsr-test201-v2">
@@ -607,6 +606,12 @@ main,.chartpage,#settings,#test201{background:#f4f4f2!important}
    <label class="setline"><span>Min HP</span><input id="autoHp" type="number" step=".1" value="1"></label>
    <label class="setline"><span>Min alpha rad/s²</span><input id="autoAlpha" type="number" value="10"></label>
   </section>
+  <section class="card"><h3>SHIFT LIGHT · GPIO6</h3>
+   <label class="setline"><span>Enable shift light</span><input id="shiftLightEnable" type="checkbox"></label>
+   <label class="setline"><span>Light ON RPM</span><input id="shiftRpm" type="number" min="500" max="20000" step="100" value="10000"></label>
+   <label class="setline"><span>Blink RPM</span><input id="shiftBlinkRpm" type="number" min="500" max="20000" step="100" value="12000"></label>
+   <p class="note">GPIO6 output: LOW below Light ON RPM, steady 3.3V from Light ON RPM, then fast 3.3V blinking from Blink RPM. Disable turns GPIO6 LOW.</p>
+  </section>
  </div>
  <div class="settings-actions"><button id="btnSaveSettings" type="button">SAVE SETTINGS</button><span id="settingsSaveStatus">AUTO-SAVE ON</span></div>
 </main>
@@ -647,16 +652,16 @@ try{if(/[?&]android=1(?:&|$)/.test(location.search)){document.documentElement.cl
 var S={connected:false,recording:false,sim:false,auto:false,autoEndRun:true,device:null,server:null,live:null,cmd:null,status:null,lineBuf:'',statusBuf:'',cfgState:'unknown',cfgMigrating:false,lastT:0,omegaF:0,ow:[],tw:[],rpm:0,rrpm:0,speed:0,afr:0,hp:0,tq:0,alpha:0,hpMax:0,tqMax:0,hpMaxRpm:0,tqMaxRpm:0,runPower:[],runRpm:[],liveRpmPts:[],lastSampleT:0,simT:0,run201:false,wait201:false,done201:false,d201:0,t2010:0,t201last:0,maxS201:0,maxR201:0,rollerCalcPrimed:false,rollerStartupSamplesRemaining:0,rollerGuardLastDistinctRpm:0,rollerGuardLastDistinctMs:0,lastPlotRpm:0,runPeakRollerRpm:0,runDeclineSinceMs:0,smoothingLevel:1,powerPickX:null,powerHit:null};
 var BLE={service:'d7a10001-7c35-4a6d-9f0e-2ea3117f1000',live:'d7a10002-7c35-4a6d-9f0e-2ea3117f1000',cmd:'d7a10003-7c35-4a6d-9f0e-2ea3117f1000',status:'d7a10005-7c35-4a6d-9f0e-2ea3117f1000'};
 var $=function(id){return document.getElementById(id)},dec=new TextDecoder(),enc=new TextEncoder();
-var cfgIds=['rollerD','rollerJ','maxRpm','maxSpeed','ignitionCycle','rpmFilterUs','autoSpeed','autoHp','autoAlpha'];
+var cfgIds=['rollerD','rollerJ','maxRpm','maxSpeed','ignitionCycle','rpmFilterUs','autoSpeed','autoHp','autoAlpha','shiftRpm','shiftBlinkRpm'];
 var cfgBleKeys={
  rollerD:'WD',rollerJ:'IJ',maxRpm:'MR',maxSpeed:'MS',
  afrVMin:'V0',afrMin:'A0',afrVMax:'V1',afrMax:'A1',afrDecelEps:'DE',
- ignitionCycle:'IC',rpmFilterUs:'RF',autoSpeed:'SP',autoHp:'HP',autoAlpha:'AA'
+ ignitionCycle:'IC',rpmFilterUs:'RF',autoSpeed:'SP',autoHp:'HP',autoAlpha:'AA',shiftRpm:'SR',shiftBlinkRpm:'SB'
 };
 var cfgBleIds={
  WD:'rollerD',IJ:'rollerJ',MR:'maxRpm',MS:'maxSpeed',
  V0:'afrVMin',A0:'afrMin',V1:'afrVMax',A1:'afrMax',DE:'afrDecelEps',
- IC:'ignitionCycle',RF:'rpmFilterUs',SP:'autoSpeed',HP:'autoHp',AA:'autoAlpha'
+ IC:'ignitionCycle',RF:'rpmFilterUs',SP:'autoSpeed',HP:'autoHp',AA:'autoAlpha',SR:'shiftRpm',SB:'shiftBlinkRpm'
 };
 var runHistory=[],selectedRunIndex=-1,RUN_HISTORY_KEY='dynotl_mobile_runs_v2',RUN_COUNTER_KEY='dynotl_mobile_run_counter_v2';
 var OMEGA_EMA_K=0.15,ALPHA_WINDOW_N=10,ROLLER_STARTUP_SKIP_SAMPLES=4;
@@ -806,12 +811,13 @@ function pushRpmFilter(){
 function cfgValueForId(id){
  if(id==='autoStart')return $('autoStart').checked?'1':'0';
  if(id==='autoEndRun')return $('autoEndRun').checked?'1':'0';
+ if(id==='shiftLightEnable')return $('shiftLightEnable').checked?'1':'0';
  if(id==='smoothingLevel')return String(S.smoothingLevel);
  var e=$(id);return e?String(e.value):''
 }
 async function pushConfigKey(id){
  if(!S.connected||!S.cmd||S.cfgState!=='ready')return;
- var key=id==='autoStart'?'AS':(id==='autoEndRun'?'AE':(id==='smoothingLevel'?'SM':cfgBleKeys[id]));
+ var key=id==='autoStart'?'AS':(id==='autoEndRun'?'AE':(id==='shiftLightEnable'?'SL':(id==='smoothingLevel'?'SM':cfgBleKeys[id])));
  if(!key)return;
  try{await writeCmd('CFG '+key+' '+cfgValueForId(id))}catch(e){}
 }
@@ -826,6 +832,7 @@ async function pushAllConfigToS3(isMigration){
    }
    await writeCmd('CFG AS '+cfgValueForId('autoStart'));
    await writeCmd('CFG AE '+cfgValueForId('autoEndRun'));
+   await writeCmd('CFG SL '+cfgValueForId('shiftLightEnable'));
    await writeCmd('CFG SM '+cfgValueForId('smoothingLevel'));
    if(isMigration)await writeCmd('CFGSAVE');
    else await writeCmd('CFGSAVE');
@@ -850,6 +857,7 @@ function applyConfigLine(line){
  });
  if(m.AS!=null){S.auto=m.AS==='1';$('autoStart').checked=S.auto;$('ctlAuto').classList.toggle('on',S.auto)}
  if(m.AE!=null){S.autoEndRun=m.AE==='1';$('autoEndRun').checked=S.autoEndRun}
+ if(m.SL!=null&&$('shiftLightEnable'))$('shiftLightEnable').checked=m.SL==='1';
  if(m.SM!=null){var sm=parseInt(m.SM,10);S.smoothingLevel=(sm===0||sm===1||sm===2)?sm:1;syncSmoothingButtons()}
  S.cfgState='ready';
  save(false);
@@ -1487,8 +1495,8 @@ function bindRunHistoryUI(){
  if($('compareMetric'))$('compareMetric').addEventListener('change',drawCompare)
 }
 function setSaveStatus(text,cls){var e=$('settingsSaveStatus');if(!e)return;e.textContent=text;e.className=cls||''}
-function save(showStatus){try{if(showStatus)setSaveStatus('SAVING...','saving');var o={};cfgIds.forEach(function(id){o[id]=$(id).value});o.auto=$('autoStart').checked;o.autoEndRun=$('autoEndRun').checked;o.smoothingLevel=S.smoothingLevel;localStorage.setItem('dynotl_mobile_v1',JSON.stringify(o));if(showStatus){setSaveStatus('SAVED','saved');setTimeout(function(){setSaveStatus('AUTO-SAVE ON','')},1400)}return true}catch(e){if(showStatus)setSaveStatus('SAVE ERROR','error');return false}}
-function load(){try{var o=JSON.parse(localStorage.getItem('dynotl_mobile_v1')||'{}');cfgIds.forEach(function(id){if(o[id]!=null)$(id).value=o[id]});S.auto=!!o.auto;S.autoEndRun=o.autoEndRun==null?true:!!o.autoEndRun;S.smoothingLevel=(o.smoothingLevel===0||o.smoothingLevel===1||o.smoothingLevel===2)?o.smoothingLevel:1;$('autoStart').checked=S.auto;$('autoEndRun').checked=S.autoEndRun;$('ctlAuto').classList.toggle('on',S.auto);syncSmoothingButtons()}catch(e){}}
+function save(showStatus){try{if(showStatus)setSaveStatus('SAVING...','saving');var o={};cfgIds.forEach(function(id){o[id]=$(id).value});o.auto=$('autoStart').checked;o.autoEndRun=$('autoEndRun').checked;o.shiftLightEnable=$('shiftLightEnable')?$('shiftLightEnable').checked:false;o.smoothingLevel=S.smoothingLevel;localStorage.setItem('dynotl_mobile_v1',JSON.stringify(o));if(showStatus){setSaveStatus('SAVED','saved');setTimeout(function(){setSaveStatus('AUTO-SAVE ON','')},1400)}return true}catch(e){if(showStatus)setSaveStatus('SAVE ERROR','error');return false}}
+function load(){try{var o=JSON.parse(localStorage.getItem('dynotl_mobile_v1')||'{}');cfgIds.forEach(function(id){if(o[id]!=null)$(id).value=o[id]});S.auto=!!o.auto;S.autoEndRun=o.autoEndRun==null?true:!!o.autoEndRun;S.smoothingLevel=(o.smoothingLevel===0||o.smoothingLevel===1||o.smoothingLevel===2)?o.smoothingLevel:1;$('autoStart').checked=S.auto;$('autoEndRun').checked=S.autoEndRun;if($('shiftLightEnable'))$('shiftLightEnable').checked=!!o.shiftLightEnable;$('ctlAuto').classList.toggle('on',S.auto);syncSmoothingButtons()}catch(e){}}
 // Kiosk hardening: keep the UI appliance-like instead of browser-like.
 document.addEventListener('contextmenu',function(e){e.preventDefault()});
 document.addEventListener('dragstart',function(e){e.preventDefault()});
@@ -1508,7 +1516,7 @@ document.addEventListener('keydown',function(e){
 },true);
 
 document.querySelectorAll('nav button').forEach(function(b){b.onclick=function(){showPage(b.dataset.page)}})
-$('bleTop').onclick=connectBle;$('ctlBle').onclick=connectBle;$('ctlRun').onclick=startRun;$('ctlStop').onclick=stopRun;$('ctlAuto').onclick=toggleAuto;$('ctlSim').onclick=toggleSim;if($('btnSaveSettings'))$('btnSaveSettings').onclick=function(){save(true);if(S.connected&&S.cmd)pushAllConfigToS3(S.cfgState!=='ready')};document.querySelectorAll('[data-smooth]').forEach(function(b){b.onclick=function(){setSmoothingLevel(this.dataset.smooth,true)}});$('run201').onclick=function(){reset201();S.wait201=true;var st=$('state201');st.textContent='WAITING ≥ 1 km/h';st.className='test201-state'};$('reset201').onclick=reset201;$('autoStart').onchange=function(){S.auto=this.checked;$('ctlAuto').classList.toggle('on',S.auto);save();pushConfigKey('autoStart')};$('autoEndRun').onchange=function(){S.autoEndRun=this.checked;S.runDeclineSinceMs=0;save();pushConfigKey('autoEndRun')}
+$('bleTop').onclick=connectBle;$('ctlBle').onclick=connectBle;$('ctlRun').onclick=startRun;$('ctlStop').onclick=stopRun;$('ctlAuto').onclick=toggleAuto;$('ctlSim').onclick=toggleSim;if($('btnSaveSettings'))$('btnSaveSettings').onclick=function(){save(true);if(S.connected&&S.cmd)pushAllConfigToS3(S.cfgState!=='ready')};document.querySelectorAll('[data-smooth]').forEach(function(b){b.onclick=function(){setSmoothingLevel(this.dataset.smooth,true)}});$('run201').onclick=function(){reset201();S.wait201=true;var st=$('state201');st.textContent='WAITING ≥ 1 km/h';st.className='test201-state'};$('reset201').onclick=reset201;$('autoStart').onchange=function(){S.auto=this.checked;$('ctlAuto').classList.toggle('on',S.auto);save();pushConfigKey('autoStart')};$('autoEndRun').onchange=function(){S.autoEndRun=this.checked;S.runDeclineSinceMs=0;save();pushConfigKey('autoEndRun')};if($('shiftLightEnable'))$('shiftLightEnable').onchange=function(){save(false);pushConfigKey('shiftLightEnable')}
 cfgIds.forEach(function(id){$(id).addEventListener('change',function(){save(false);if(id==='rpmFilterUs')pushRpmFilter();pushConfigKey(id)});$(id).addEventListener('input',function(){save(false)})});if($('rollerD201')){try{var d201Saved=localStorage.getItem('37tsr_rollerD201');$('rollerD201').value=d201Saved||($('rollerD')?$('rollerD').value:'240')}catch(e){};$('rollerD201').addEventListener('change',function(){try{localStorage.setItem('37tsr_rollerD201',this.value)}catch(e){}})};window.addEventListener('resize',drawAll);document.addEventListener('visibilitychange',function(){if(!document.hidden)drawAll()});load();initAppNumPad();restoreRunHistory();renderRunHistoryUI();bindRunHistoryUI();bindPowerChartTouch();reset201();try{console.log('37TSR 2T build - classic gauges, no AFR')}catch(e){};setBle(false);try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(function(){})}catch(e){};setTimeout(drawAll,100);
 })();
 </script>
