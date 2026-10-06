@@ -1,0 +1,60 @@
+name: Build 37TSR Dyno iOS IPA
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'ios/**'
+      - 'index.html'
+      - 'live/**'
+      - 'assets/**'
+      - '.github/workflows/build-ios-ipa.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: |
+          if ! command -v xcodegen >/dev/null 2>&1; then
+            brew install xcodegen
+          fi
+
+      - name: Prepare bundled web UI and Xcode project
+        working-directory: ios
+        run: |
+          python3 tools/prepare_web.py
+          python3 tools/make_icons.py
+          xcodegen generate
+
+      - name: Build unsigned iPhone app
+        working-directory: ios
+        run: |
+          set -euo pipefail
+          rm -rf build-device Payload 37TSR-Dyno-unsigned.ipa
+          xcodebuild             -project TSRDyno.xcodeproj             -scheme TSRDyno             -configuration Release             -sdk iphoneos             -derivedDataPath build-device             CODE_SIGNING_ALLOWED=NO             build
+
+          APP_PATH="$(find build-device/Build/Products/Release-iphoneos -maxdepth 1 -name '*.app' -type d -print -quit)"
+          test -n "$APP_PATH"
+          test -f "$APP_PATH/Web/index.html"
+          grep -q "PB 1.004" "$APP_PATH/Web/index.html"
+          grep -q "37TSR Dyno" "$APP_PATH/Info.plist" || true
+          echo "Built app: $APP_PATH"
+
+          mkdir -p Payload
+          cp -R "$APP_PATH" Payload/
+          /usr/bin/zip -qry 37TSR-Dyno-unsigned.ipa Payload
+          test -s 37TSR-Dyno-unsigned.ipa
+
+      - name: Upload unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: 37TSR-Dyno-iOS-PB-1.004-unsigned
+          path: ios/37TSR-Dyno-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 30
