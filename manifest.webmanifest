@@ -1,9 +1,9 @@
 {
-  "name":"BT Speed Dyno",
-  "short_name":"BT Speed",
+  "name":"37TSR Dyno",
+  "short_name":"37TSR",
   "start_url":"./",
   "display":"fullscreen",
   "orientation":"landscape",
-  "background_color":"#050505",
-  "theme_color":"#ff6a00"
+  "background_color":"#f4f4f2",
+  "theme_color":"#111111"
 }
