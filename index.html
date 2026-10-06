@@ -1024,6 +1024,196 @@ body{background:#ecebe8!important}
   }
 }
 </style>
+
+<style id="37tsr-test201-phone-tabs">
+.test201-mobile-tabs{display:none}
+
+@media(max-width:900px){
+ #test201{
+   position:relative!important;
+   padding:3px!important;
+   overflow:hidden!important;
+   display:none;
+   grid-template-rows:24px minmax(0,1fr)!important;
+ }
+ #test201.page.on{
+   display:grid!important;
+ }
+ #test201 .test201-mobile-tabs{
+   display:grid!important;
+   grid-template-columns:repeat(3,1fr)!important;
+   gap:3px!important;
+   height:22px!important;
+   min-height:22px!important;
+ }
+ #test201 .test201-mobile-tabs button{
+   min-width:0!important;
+   border:1px solid #111!important;
+   border-radius:5px!important;
+   background:rgba(255,255,255,.52)!important;
+   color:#111!important;
+   font:900 7px Arial,sans-serif!important;
+   letter-spacing:.4px!important;
+ }
+ #test201 .test201-mobile-tabs button.on{
+   background:#111!important;
+   color:#fff!important;
+ }
+ #test201 .test201-grid{
+   height:100%!important;
+   min-height:0!important;
+   display:grid!important;
+   grid-template-columns:1fr!important;
+   grid-template-rows:minmax(0,43%) minmax(0,57%)!important;
+   gap:3px!important;
+ }
+ #test201 .test201-grid>.card{
+   min-height:0!important;
+   min-width:0!important;
+ }
+
+ /* DATA = only what matters while racing */
+ #test201[data-mobile-view="data"] .test201-live-card{
+   display:grid!important;
+   grid-column:1!important;
+   grid-row:1!important;
+ }
+ #test201[data-mobile-view="data"] .test201-splits-card{
+   display:grid!important;
+   grid-column:1!important;
+   grid-row:2!important;
+ }
+ #test201[data-mobile-view="data"] .test201-chart-card,
+ #test201[data-mobile-view="data"] .test201-history-card{
+   display:none!important;
+ }
+
+ #test201[data-mobile-view="data"] .test201-live-card{
+   grid-template-rows:21px 24px minmax(0,1fr)!important;
+ }
+ #test201[data-mobile-view="data"] .test201-live-metrics{
+   grid-template-columns:repeat(10,minmax(0,1fr))!important;
+   grid-template-rows:1fr!important;
+   gap:3px!important;
+ }
+ #test201[data-mobile-view="data"] .test201-live-metrics .metric:nth-child(1){
+   grid-column:1/3!important;grid-row:1!important;
+ }
+ #test201[data-mobile-view="data"] .test201-live-metrics .metric:nth-child(2){
+   grid-column:3/5!important;grid-row:1!important;
+ }
+ #test201[data-mobile-view="data"] .test201-live-metrics .metric:nth-child(3){
+   grid-column:5/7!important;grid-row:1!important;
+ }
+ #test201[data-mobile-view="data"] .test201-live-metrics .metric:nth-child(4){
+   grid-column:7/9!important;grid-row:1!important;
+ }
+ #test201[data-mobile-view="data"] .test201-live-metrics .metric:nth-child(5){
+   grid-column:9/11!important;grid-row:1!important;
+ }
+ #test201[data-mobile-view="data"] .test201-live-metrics .metric{
+   align-items:center!important;
+   text-align:center!important;
+   padding:3px!important;
+ }
+ #test201[data-mobile-view="data"] .test201-live-metrics .metric b,
+ #test201[data-mobile-view="data"] .test201-live-metrics .metric:nth-child(1) b,
+ #test201[data-mobile-view="data"] .test201-live-metrics .metric:nth-child(2) b{
+   font-size:clamp(15px,4.8vh,28px)!important;
+   line-height:1!important;
+ }
+ #test201[data-mobile-view="data"] .test201-live-metrics .metric span{
+   font-size:6px!important;
+ }
+ #test201[data-mobile-view="data"] .test201-splits-card{
+   grid-template-rows:16px minmax(0,1fr)!important;
+ }
+ #test201[data-mobile-view="data"] .test201-split-table{
+   height:100%!important;
+   grid-template-rows:17px repeat(4,minmax(0,1fr))!important;
+ }
+ #test201[data-mobile-view="data"] .split-row>*{
+   font-size:7px!important;
+   padding:2px 5px!important;
+ }
+ #test201[data-mobile-view="data"] .split-head>*{
+   font-size:5.5px!important;
+ }
+ #test201[data-mobile-view="data"] .split-row b small{
+   font-size:5px!important;
+ }
+
+ /* GRAPH = one full-screen chart */
+ #test201[data-mobile-view="graph"] .test201-live-card,
+ #test201[data-mobile-view="graph"] .test201-splits-card,
+ #test201[data-mobile-view="graph"] .test201-history-card{
+   display:none!important;
+ }
+ #test201[data-mobile-view="graph"] .test201-grid{
+   grid-template-rows:minmax(0,1fr)!important;
+ }
+ #test201[data-mobile-view="graph"] .test201-chart-card{
+   display:grid!important;
+   grid-column:1!important;
+   grid-row:1!important;
+   min-height:0!important;
+   grid-template-rows:20px minmax(0,1fr)!important;
+ }
+
+ /* RUNS = history gets the full screen */
+ #test201[data-mobile-view="runs"] .test201-live-card,
+ #test201[data-mobile-view="runs"] .test201-splits-card,
+ #test201[data-mobile-view="runs"] .test201-chart-card{
+   display:none!important;
+ }
+ #test201[data-mobile-view="runs"] .test201-grid{
+   grid-template-rows:minmax(0,1fr)!important;
+ }
+ #test201[data-mobile-view="runs"] .test201-history-card{
+   display:grid!important;
+   grid-column:1!important;
+   grid-row:1!important;
+   min-height:0!important;
+   grid-template-rows:20px minmax(0,1fr)!important;
+ }
+ #test201[data-mobile-view="runs"] .test201-history table{
+   font-size:7px!important;
+ }
+ #test201[data-mobile-view="runs"] .test201-history th,
+ #test201[data-mobile-view="runs"] .test201-history td{
+   padding:5px 4px!important;
+ }
+
+ #test201 .test201-title-row h2,
+ #test201 .test201-splits-card h2,
+ #test201 .test201-chart-card h2,
+ #test201 .test201-history-card h2{
+   font-size:8px!important;
+ }
+}
+
+@media(max-width:900px) and (max-height:430px){
+ #test201{
+   grid-template-rows:21px minmax(0,1fr)!important;
+ }
+ #test201 .test201-mobile-tabs{
+   height:19px!important;
+   min-height:19px!important;
+ }
+ #test201 .test201-mobile-tabs button{font-size:6px!important}
+ #test201 .test201-grid{
+   grid-template-rows:minmax(0,41%) minmax(0,59%)!important;
+ }
+ #test201[data-mobile-view="data"] .test201-live-card{
+   grid-template-rows:18px 21px minmax(0,1fr)!important;
+ }
+ #test201[data-mobile-view="data"] .test201-live-metrics .metric b,
+ #test201[data-mobile-view="data"] .test201-live-metrics .metric:nth-child(1) b,
+ #test201[data-mobile-view="data"] .test201-live-metrics .metric:nth-child(2) b{
+   font-size:clamp(12px,4.1vh,20px)!important;
+ }
+}
+</style>
 </head>
 <body>
 <img id="exhaustBgDirect" src="./assets/37tsr-exhaust-bg.webp?v=6" alt="" aria-hidden="true">
@@ -1097,7 +1287,12 @@ body{background:#ecebe8!important}
 </main>
 
 
-<main id="test201" class="page">
+<main id="test201" class="page" data-mobile-view="data">
+ <div class="test201-mobile-tabs" aria-label="201m mobile view">
+  <button type="button" data-201view="data" class="on">DATA</button>
+  <button type="button" data-201view="graph">GRAPH</button>
+  <button type="button" data-201view="runs">RUNS</button>
+ </div>
  <div class="test201-grid">
   <section class="card test201-live-card">
    <div class="test201-title-row">
@@ -2190,7 +2385,15 @@ document.addEventListener('keydown',function(e){
 
 document.querySelectorAll('nav button').forEach(function(b){b.onclick=function(){showPage(b.dataset.page)}})
 $('bleTop').onclick=connectBle;$('ctlBle').onclick=connectBle;$('ctlRun').onclick=startRun;$('ctlStop').onclick=stopRun;$('ctlAuto').onclick=toggleAuto;$('ctlSim').onclick=toggleSim;if($('btnSaveSettings'))$('btnSaveSettings').onclick=function(){save(true);if(S.connected&&S.cmd)pushAllConfigToS3(S.cfgState!=='ready')};document.querySelectorAll('[data-smooth]').forEach(function(b){b.onclick=function(){setSmoothingLevel(this.dataset.smooth,true)}});$('run201').onclick=async function(){reset201();S.arm201PulseCount=S.rollerPulseCount>>>0;S.wait201=true;var st=$('state201');st.textContent='ARMED · WAIT FIRST ROLLER PULSE';st.className='test201-state';if(S.connected&&S.cmd){try{await writeCmd('201ARM')}catch(e){}}};$('reset201').onclick=function(){reset201();if(S.connected&&S.cmd)writeCmd('201DISARM')};$('autoStart').onchange=function(){S.auto=this.checked;$('ctlAuto').classList.toggle('on',S.auto);save();pushConfigKey('autoStart')};$('autoEndRun').onchange=function(){S.autoEndRun=this.checked;S.runDeclineSinceMs=0;save();pushConfigKey('autoEndRun')};if($('shiftLightEnable'))$('shiftLightEnable').onchange=function(){save(false);pushConfigKey('shiftLightEnable')}
-cfgIds.forEach(function(id){$(id).addEventListener('change',function(){save(false);if(id==='rpmFilterUs')pushRpmFilter();pushConfigKey(id)});$(id).addEventListener('input',function(){save(false)})});if($('rollerD201')){try{var d201Saved=localStorage.getItem('37tsr_rollerD201');$('rollerD201').value=d201Saved||($('rollerD')?$('rollerD').value:'240')}catch(e){};$('rollerD201').addEventListener('change',function(){try{localStorage.setItem('37tsr_rollerD201',this.value)}catch(e){}})};window.addEventListener('resize',drawAll);document.addEventListener('visibilitychange',function(){if(!document.hidden)drawAll()});load();initAppNumPad();restoreRunHistory();renderRunHistoryUI();bindRunHistoryUI();bindPowerChartTouch();reset201();try{console.log('37TSR 2T build - classic gauges, no AFR')}catch(e){};setBle(false);try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(function(){})}catch(e){};setTimeout(drawAll,100);
+cfgIds.forEach(function(id){$(id).addEventListener('change',function(){save(false);if(id==='rpmFilterUs')pushRpmFilter();pushConfigKey(id)});$(id).addEventListener('input',function(){save(false)})});if($('rollerD201')){try{var d201Saved=localStorage.getItem('37tsr_rollerD201');$('rollerD201').value=d201Saved||($('rollerD')?$('rollerD').value:'240')}catch(e){};$('rollerD201').addEventListener('change',function(){try{localStorage.setItem('37tsr_rollerD201',this.value)}catch(e){}})};document.querySelectorAll('[data-201view]').forEach(function(b){
+ b.onclick=function(){
+   var view=this.getAttribute('data-201view')||'data',page=$('test201');
+   if(page)page.setAttribute('data-mobile-view',view);
+   document.querySelectorAll('[data-201view]').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-201view')===view)});
+   setTimeout(drawAll,20)
+ }
+});
+window.addEventListener('resize',drawAll);document.addEventListener('visibilitychange',function(){if(!document.hidden)drawAll()});load();initAppNumPad();restoreRunHistory();renderRunHistoryUI();bindRunHistoryUI();bindPowerChartTouch();reset201();try{console.log('37TSR 2T build - classic gauges, no AFR')}catch(e){};setBle(false);try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(function(){})}catch(e){};setTimeout(drawAll,100);
 })();
 </script>
 <script id="original-pc-live-adapter">
