@@ -439,8 +439,7 @@ main,.chartpage,#settings,#test201{background:#f4f4f2!important}
 .mobile-chart-legend .tq:before{background:#22c55e!important}
 .mobile-chart-legend .erpm:before{background:#facc15!important}
 .mobile-chart-legend .spd:before{background:#3b82f6!important}
-#liveRpmArc .classic-value{fill:#facc15!important}
-#liveSpeedArc .classic-value{fill:#3b82f6!important}
+#liveRpmArc .classic-value,#liveSpeedArc .classic-value{fill:#111!important}
 #liveRpmArc .classic-needle,#liveSpeedArc .classic-needle{stroke:#111!important}
 </style>
 
@@ -1592,7 +1591,7 @@ cfgIds.forEach(function(id){$(id).addEventListener('change',function(){save(fals
      if(!el||!el._led)return;var n=Number(value);if(!Number.isFinite(n)||n<0)n=0;var max=Number(maxValue)||1;
      var fraction=Math.max(0,Math.min(1,n/max)),deg=-125+250*fraction;
      if(el._led.needle)el._led.needle.setAttribute('transform','rotate('+deg.toFixed(2)+' 260 220)');
-     if(el._led.value)el._led.value.textContent=el.id==='liveRpmArc'?String(Math.round(n/1000)):String(Math.round(n));
+     if(el._led.value)el._led.value.textContent=String(Math.round(n));
      if(el._led.svg)el._led.svg.setAttribute('aria-label',el.dataset.title+': '+Math.round(n))
    }
    buildGauge(rpmGauge);buildGauge(speedGauge);
