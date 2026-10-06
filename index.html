@@ -885,7 +885,7 @@ body{background:#ecebe8!important}
 (function(){
 'use strict';
 try{if(/[?&]android=1(?:&|$)/.test(location.search)){document.documentElement.classList.add('android-app');document.body&&document.body.classList.add('android-app')}}catch(e){}
-var S={connected:false,recording:false,sim:false,auto:false,autoEndRun:true,device:null,server:null,live:null,cmd:null,status:null,lineBuf:'',statusBuf:'',cfgState:'unknown',cfgMigrating:false,lastT:0,omegaF:0,ow:[],tw:[],rpm:0,rrpm:0,speed:0,afr:0,hp:0,tq:0,alpha:0,hpMax:0,tqMax:0,hpMaxRpm:0,tqMaxRpm:0,runPower:[],runRpm:[],liveRpmPts:[],lastSampleT:0,simT:0,run201:false,wait201:false,done201:false,d201:0,t2010:0,t201last:0,maxS201:0,maxR201:0,rollerCalcPrimed:false,rollerStartupSamplesRemaining:0,rollerGuardLastDistinctRpm:0,rollerGuardLastDistinctMs:0,lastPlotRpm:0,runPeakRollerRpm:0,runDeclineSinceMs:0,smoothingLevel:1,powerPickX:null,powerHit:null,rollerPulseCount:0,rollerPulseMs:0,pulseTelemetry:false,arm201PulseCount:0,start201PulseCount:0,last201PulseCount:0,last201PulseMs:0,raw201Speed:0,raw201Rrpm:0,last201EngineRpm:0};
+var S={connected:false,recording:false,sim:false,auto:false,autoEndRun:true,device:null,server:null,live:null,cmd:null,status:null,lineBuf:'',statusBuf:'',cfgState:'unknown',cfgMigrating:false,lastT:0,omegaF:0,ow:[],tw:[],rpm:0,rrpm:0,speed:0,afr:0,hp:0,tq:0,alpha:0,hpMax:0,tqMax:0,hpMaxRpm:0,tqMaxRpm:0,runPower:[],runRpm:[],liveRpmPts:[],lastSampleT:0,simT:0,run201:false,wait201:false,done201:false,d201:0,t2010:0,t201last:0,maxS201:0,maxR201:0,rollerCalcPrimed:false,rollerStartupSamplesRemaining:0,rollerGuardLastDistinctRpm:0,rollerGuardLastDistinctMs:0,lastPlotRpm:0,runPeakRollerRpm:0,runDeclineSinceMs:0,smoothingLevel:1,powerPickX:null,powerHit:null,rollerPulseCount:0,rollerPulseMs:0,pulseTelemetry:false,arm201PulseCount:0,start201PulseCount:0,last201PulseCount:0,last201PulseMs:0,start201PulseUs:0,last201PulseUs:0,raw201ElapsedUs:0,raw201Speed:0,raw201Rrpm:0,last201EngineRpm:0,raw201EventMode:false,raw201ArmAck:false};
 var BLE={service:'d7a10001-7c35-4a6d-9f0e-2ea3117f1000',live:'d7a10002-7c35-4a6d-9f0e-2ea3117f1000',cmd:'d7a10003-7c35-4a6d-9f0e-2ea3117f1000',status:'d7a10005-7c35-4a6d-9f0e-2ea3117f1000'};
 var $=function(id){return document.getElementById(id)},dec=new TextDecoder(),enc=new TextEncoder();
 var cfgIds=['rollerD','rollerJ','maxRpm','maxSpeed','ignitionCycle','rpmFilterUs','autoSpeed','autoHp','autoAlpha','shiftRpm','shiftBlinkRpm'];
@@ -1114,7 +1114,7 @@ async function connectBle(){if(S.connected){disconnectBle();return}if(!navigator
   acceptAllDevices:true,
   optionalServices:[BLE.service]
 });S.device.addEventListener('gattserverdisconnected',function(){setBle(false,'BLE LOST')});S.server=await S.device.gatt.connect();var sv=await S.server.getPrimaryService(BLE.service);S.live=await sv.getCharacteristic(BLE.live);S.cmd=await sv.getCharacteristic(BLE.cmd);S.status=await sv.getCharacteristic(BLE.status);await S.live.startNotifications();S.live.addEventListener('characteristicvaluechanged',onLive);await S.status.startNotifications();S.status.addEventListener('characteristicvaluechanged',onStatus);S.cfgState='unknown';setBle(true,'37TSR Hardware');writeCmd('STATUS');setTimeout(function(){writeCmd('RPMFILTER?')},80);setTimeout(function(){writeCmd('CONFIG?')},150)}catch(e){if(!e||e.name!=='NotFoundError')alert('BLE error: '+(e&&e.message||e));setBle(false)}}
-function disconnectBle(){try{if(S.device&&S.device.gatt.connected)S.device.gatt.disconnect()}catch(e){}S.cfgState='unknown';S.cfgMigrating=false;setBle(false)}
+function disconnectBle(){try{if(S.device&&S.device.gatt.connected)S.device.gatt.disconnect()}catch(e){}S.cfgState='unknown';S.cfgMigrating=false;S.raw201ArmAck=false;S.raw201EventMode=false;setBle(false)}
 async function writeCmd(t){if(!S.cmd)return;var b=enc.encode(t);if(S.cmd.writeValueWithoutResponse)await S.cmd.writeValueWithoutResponse(b);else await S.cmd.writeValue(b)}
 function onStatus(e){try{
  var d=e.target.value,txt=dec.decode(new Uint8Array(d.buffer,d.byteOffset,d.byteLength));S.statusBuf+=txt;var i;
@@ -1128,6 +1128,8 @@ function onStatus(e){try{
      continue;
    }
    if(/^CFGSAVED$/i.test(line)){S.cfgState='ready';setSaveStatus('SAVED TO S3','saved');setTimeout(function(){setSaveStatus('AUTO-SAVE ON','')},1400);continue}
+   if(/^201ARMED$/i.test(line)){S.raw201ArmAck=true;continue}
+   if(/^201DISARMED$/i.test(line)){S.raw201ArmAck=false;continue}
    var m=/RPM(?:FILTER|LOCK)=(\d+)/i.exec(line);if(m&&$('rpmFilterUs')){$('rpmFilterUs').value=String(Math.max(50,Math.min(10000,+m[1]||250)));save(false)}
    if(/BT SPEED DYNO READY/i.test(line))$('bleStatus').textContent='BT SPEED DYNO';else if(/ERR/i.test(line))$('bleStatus').textContent=line;
  }
@@ -1138,46 +1140,62 @@ function get201DiameterM(){
  if(!isFinite(dia)||dia<=0)dia=n('rollerD',240)/1000;
  return dia
 }
-function start201FromPulse(pc,pm){
+function start201FromPulse(pc,pu){
  if(!S.wait201)return false;
- pc=(pc>>>0);pm=(pm>>>0);
- S.rollerPulseCount=pc;S.rollerPulseMs=pm;S.pulseTelemetry=true;
- S.wait201=false;S.run201=true;S.done201=false;S.d201=0;S.t2010=pm;S.t201last=pm;S.maxS201=0;S.maxR201=0;
- S.start201PulseCount=pc;S.last201PulseCount=pc;S.last201PulseMs=pm;S.raw201Speed=0;S.raw201Rrpm=0;S.last201EngineRpm=+S.rpm||0;
- test201Curve=[];clear201Splits();render201Splits();test201PrevSample={t:pm,speed:0,rpm:+S.rpm||0,rrpm:0};
- var st=$('state201');if(st){st.textContent='RUNNING · RAW HALL';st.className='test201-state running'}
+ pc=(pc>>>0);pu=(pu>>>0);
+ S.raw201EventMode=true;S.pulseTelemetry=true;
+ S.rollerPulseCount=pc;
+ S.wait201=false;S.run201=true;S.done201=false;S.d201=0;S.t2010=0;S.t201last=0;S.maxS201=0;S.maxR201=0;
+ S.start201PulseCount=pc;S.last201PulseCount=pc;S.start201PulseUs=pu;S.last201PulseUs=pu;S.raw201ElapsedUs=0;S.raw201Speed=0;S.raw201Rrpm=0;S.last201EngineRpm=+S.rpm||0;
+ test201Curve=[];clear201Splits();render201Splits();test201PrevSample={t:0,speed:0,rpm:+S.rpm||0,rrpm:0};
+ var st=$('state201');if(st){st.textContent='RUNNING · RAW HALL µs';st.className='test201-state running'}
  return true
 }
-function process201Pulse(pc,pm){
- pc=(pc>>>0);pm=(pm>>>0);
- S.rollerPulseCount=pc;S.rollerPulseMs=pm;S.pulseTelemetry=true;
- if(start201FromPulse(pc,pm))return;
+function process201Pulse(pc,pu){
+ pc=(pc>>>0);pu=(pu>>>0);
+ S.raw201EventMode=true;S.pulseTelemetry=true;S.rollerPulseCount=pc;
+ if(start201FromPulse(pc,pu))return;
  if(!S.run201)return;
+
  var prevCount=S.last201PulseCount>>>0,step=((pc-prevCount)>>>0);
  if(step===0||step>=0x80000000)return;
- var dtMs=((pm-(S.last201PulseMs>>>0))>>>0);
- if(dtMs===0||dtMs>60000){S.last201PulseCount=pc;S.last201PulseMs=pm;return}
+
+ var dtUs=((pu-(S.last201PulseUs>>>0))>>>0);
+ if(dtUs===0||dtUs>60000000)return;
+
+ // Firmware cannot legally accept valid Hall edges closer than 6000 us.
+ // Reject any transport/timestamp glitch that would imply impossible speed.
+ var minDtUs=6000*step;
+ if(dtUs<minDtUs)return;
+
  var dia=get201DiameterM(),circ=Math.PI*dia;
  var prevP=((prevCount-S.start201PulseCount)>>>0),newP=((pc-S.start201PulseCount)>>>0);
  if(prevP>=0x80000000||newP>=0x80000000)return;
- var prevD=prevP*circ,newD=newP*circ;
- var rawRpm=step*60000/dtMs;
- var rawSpeed=(step*circ)/(dtMs/1000)*3.6;
- if(!isFinite(rawRpm)||rawRpm<0)rawRpm=0;
- if(!isFinite(rawSpeed)||rawSpeed<0)rawSpeed=0;
- var engNow=+S.rpm||0;
- var prev={t:S.last201PulseMs,speed:rawSpeed,rpm:+S.last201EngineRpm||engNow,rrpm:rawRpm};
- var now={t:pm,speed:rawSpeed,rpm:engNow,rrpm:rawRpm};
 
- S.d201=newD;S.t201last=pm;S.last201PulseCount=pc;S.last201PulseMs=pm;
+ var prevD=prevP*circ,newD=newP*circ;
+ var rawRpm=step*60000000/dtUs;
+ var rawSpeed=(step*circ)/(dtUs/1000000)*3.6;
+ if(!isFinite(rawRpm)||rawRpm<0)return;
+ if(!isFinite(rawSpeed)||rawSpeed<0)return;
+
+ var prevElapsedUs=S.raw201ElapsedUs;
+ var newElapsedUs=prevElapsedUs+dtUs;
+ var prevT=prevElapsedUs/1000,curT=newElapsedUs/1000;
+ var engNow=+S.rpm||0;
+ var prev={t:prevT,speed:S.raw201Speed||rawSpeed,rpm:+S.last201EngineRpm||engNow,rrpm:S.raw201Rrpm||rawRpm};
+ var now={t:curT,speed:rawSpeed,rpm:engNow,rrpm:rawRpm};
+
+ S.raw201ElapsedUs=newElapsedUs;
+ S.d201=newD;S.t201last=curT;S.last201PulseCount=pc;S.last201PulseUs=pu;
  S.raw201Speed=rawSpeed;S.raw201Rrpm=rawRpm;S.last201EngineRpm=engNow;
  S.maxS201=Math.max(S.maxS201,rawSpeed);S.maxR201=Math.max(S.maxR201,engNow);
- TEST201_MARKS.forEach(function(m){capture201Split(m,prevD,newD,prev.t,pm,prev,now)});
+
+ TEST201_MARKS.forEach(function(m){capture201Split(m,prevD,newD,prevT,curT,prev,now)});
  test201PrevSample=now;
  test201Curve.push([Math.min(newD,TEST201_END_M),engNow,rawRpm,rawSpeed]);
  if(test201Curve.length>900)test201Curve.shift();
 
- var elapsed=Math.max(0,((pm-S.t2010)>>>0)/1000);
+ var elapsed=newElapsedUs/1000000;
  if($('dist201'))$('dist201').textContent=Math.min(newD,TEST201_END_M).toFixed(1)+' m';
  if($('time201'))$('time201').textContent=elapsed.toFixed(3)+' s';
  if($('speed201'))$('speed201').textContent=rawSpeed.toFixed(1);
@@ -1194,6 +1212,7 @@ function process201Pulse(pc,pm){
   var snap={};TEST201_MARKS.forEach(function(m){var x=test201Splits[m.key];snap[m.key]=x?Object.assign({},x):null});
   test201History.push({seq:test201History.length+1,splits:snap,maxSpeed:S.maxS201,maxRpm:S.maxR201,timestamp:new Date().toLocaleTimeString('en-GB',{hour12:false})});
   if(test201History.length>12)test201History.shift();render201History();
+  S.raw201ArmAck=false;
   if(S.connected&&S.cmd)writeCmd('201DISARM')
  }
 }
@@ -1202,9 +1221,9 @@ function handleLine(line){
  var p=line.split(',');
  if(p[0]==='P'){
    if(p.length<3)return;
-   var pc=Number(p[1]),pm=Number(p[2]);
-   if(!isFinite(pc)||!isFinite(pm))return;
-   process201Pulse(pc,pm);
+   var pc=Number(p[1]),pu=Number(p[2]);
+   if(!isFinite(pc)||!isFinite(pu))return;
+   process201Pulse(pc,pu);
    return
  }
  if(p[0]!=='D'||p.length<5)return;
@@ -1482,16 +1501,11 @@ function update201(t,rpm,rrpm,pulseCount,pulseMs){
  var dia=get201DiameterM(),filteredSpeed=(+rrpm||0)*Math.PI*dia/60*3.6;
  if(!isFinite(filteredSpeed)||filteredSpeed<0)filteredSpeed=0;
 
- // New firmware path: distance and split timing come only from raw Hall pulses.
- if(S.pulseTelemetry){
-   if(S.wait201){
-     var armDelta=((S.rollerPulseCount-S.arm201PulseCount)>>>0);
-     if(armDelta>0&&armDelta<0x80000000)process201Pulse(S.rollerPulseCount,S.rollerPulseMs>0?S.rollerPulseMs:t)
-   }else if(S.run201&&((S.rollerPulseCount-S.last201PulseCount)>>>0)>0&&((S.rollerPulseCount-S.last201PulseCount)>>>0)<0x80000000){
-     process201Pulse(S.rollerPulseCount,S.rollerPulseMs>0?S.rollerPulseMs:t)
-   }
+ // Dedicated P events are the ONLY source of 201 m distance and speed.
+ // D packets remain filtered Live/HP telemetry and must never advance raw 201 m.
+ if(S.raw201EventMode||S.raw201ArmAck){
    if(S.run201){
-     var elapsed=Math.max(0,((t-S.t2010)>>>0)/1000);
+     var elapsed=(+S.raw201ElapsedUs||0)/1000000;
      S.maxR201=Math.max(S.maxR201,+rpm||0);S.last201EngineRpm=+rpm||0;
      if($('time201'))$('time201').textContent=elapsed.toFixed(3)+' s';
      if($('rpm201'))$('rpm201').textContent=Math.round(+rpm||0);
@@ -1530,7 +1544,7 @@ function update201(t,rpm,rrpm,pulseCount,pulseMs){
  }
 }
 function reset201(){
- S.run201=S.wait201=S.done201=false;S.d201=0;S.t2010=S.t201last=0;S.maxS201=S.maxR201=0;S.arm201PulseCount=S.rollerPulseCount>>>0;S.start201PulseCount=S.rollerPulseCount>>>0;S.last201PulseCount=S.rollerPulseCount>>>0;S.last201PulseMs=0;S.raw201Speed=0;S.raw201Rrpm=0;S.last201EngineRpm=0;test201Curve=[];test201PrevSample=null;clear201Splits();
+ S.run201=S.wait201=S.done201=false;S.d201=0;S.t2010=S.t201last=0;S.maxS201=S.maxR201=0;S.arm201PulseCount=S.rollerPulseCount>>>0;S.start201PulseCount=S.rollerPulseCount>>>0;S.last201PulseCount=S.rollerPulseCount>>>0;S.last201PulseMs=0;S.start201PulseUs=0;S.last201PulseUs=0;S.raw201ElapsedUs=0;S.raw201Speed=0;S.raw201Rrpm=0;S.last201EngineRpm=0;S.raw201EventMode=false;S.raw201ArmAck=false;test201Curve=[];test201PrevSample=null;clear201Splits();
  var st=$('state201');if(st){st.textContent='WAITING';st.className='test201-state'}
  if($('dist201'))$('dist201').textContent='0.0 m';if($('time201'))$('time201').textContent='--';if($('speed201'))$('speed201').textContent='0.0';if($('rpm201'))$('rpm201').textContent='0';if($('rollerRpm201'))$('rollerRpm201').textContent='0';
  render201Splits();render201History();draw201Chart()
