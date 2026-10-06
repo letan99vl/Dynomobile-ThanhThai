@@ -1563,10 +1563,10 @@ cfgIds.forEach(function(id){$(id).addEventListener('change',function(){save(fals
    function buildGauge(el){
      if(!el)return;
      el._led={
-       paths:Array.from(el.querySelectorAll('.led-segment')).map(function(node){return{node:node,a0:+node.dataset.a0,a1:+node.dataset.a1,lastEnd:null}}),
-       svg:el.querySelector('svg'),digits:el.querySelector('.led-digital'),over:el.querySelector('.led-overrange'),lastText:null
+       svg:el.querySelector('svg'),
+       needle:el.querySelector('.classic-needle'),
+       value:el.querySelector('.classic-value')
      };
-     renderDigits(el,'0');
    }
    function ledPoint(r,a){var q=a*Math.PI/180;return[260+r*Math.cos(q),267+r*Math.sin(q)]}
    function ledSector(a,b){
@@ -1590,9 +1590,10 @@ cfgIds.forEach(function(id){$(id).addEventListener('change',function(){save(fals
    }
    function setArc(el,value,maxValue){
      if(!el||!el._led)return;var n=Number(value);if(!Number.isFinite(n)||n<0)n=0;var max=Number(maxValue)||1;
-     var fraction=Math.max(0,Math.min(1,n/max)),end=164+212*fraction;
-     el._led.paths.forEach(function(seg){var on=end>seg.a0&&fraction>0;if(!on){seg.node.setAttribute('opacity','0');seg.lastEnd=null;return}var b=Math.min(end,seg.a1);if(seg.lastEnd!==b){seg.node.setAttribute('d',ledSector(seg.a0,b));seg.lastEnd=b}seg.node.setAttribute('opacity','1')});
-     renderDigits(el,String(Math.round(n)));if(el._led.svg)el._led.svg.setAttribute('aria-label',el.dataset.title+': '+Math.round(n));if(el._led.over)el._led.over.setAttribute('visibility',n>max?'visible':'hidden')
+     var fraction=Math.max(0,Math.min(1,n/max)),deg=-125+250*fraction;
+     if(el._led.needle)el._led.needle.setAttribute('transform','rotate('+deg.toFixed(2)+' 260 220)');
+     if(el._led.value)el._led.value.textContent=el.id==='liveRpmArc'?String(Math.round(n/1000)):String(Math.round(n));
+     if(el._led.svg)el._led.svg.setAttribute('aria-label',el.dataset.title+': '+Math.round(n))
    }
    buildGauge(rpmGauge);buildGauge(speedGauge);
 
