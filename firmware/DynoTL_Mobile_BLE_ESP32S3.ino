@@ -335,12 +335,16 @@ BLECharacteristic *commandChar = nullptr;
 BLECharacteristic *statusChar = nullptr;
 volatile bool deviceConnected = false;
 
-// 201 m first-pulse arm/event state.
-// Must be declared before DynoBleCommandCallbacks because BLE commands access it.
+// 201 m raw Hall event state.
+// 201ARM waits for the next valid Hall pulse, then every valid pulse is queued
+// so drag timing can use raw pulse-to-pulse time without the roller RPM filter.
+static const uint8_t RUN201_PULSE_QUEUE_SIZE = 16;
 volatile bool run201ArmISR = false;
-volatile bool run201PulseEventPendingISR = false;
-volatile uint32_t run201PulseCountISR = 0;
-volatile uint32_t run201PulseEdgeUsISR = 0;
+volatile bool run201ActiveISR = false;
+volatile uint8_t run201PulseQHeadISR = 0;
+volatile uint8_t run201PulseQTailISR = 0;
+volatile uint32_t run201PulseCountQueueISR[RUN201_PULSE_QUEUE_SIZE] = {};
+volatile uint32_t run201PulseEdgeUsQueueISR[RUN201_PULSE_QUEUE_SIZE] = {};
 
 static void bleNotifyChunks(BLECharacteristic *ch, const char *s) {
   if (!deviceConnected || ch == nullptr || s == nullptr) return;
@@ -460,7 +464,9 @@ class DynoBleCommandCallbacks : public BLECharacteristicCallbacks {
 
     if (cmd.equalsIgnoreCase("201ARM")) {
       noInterrupts();
-      run201PulseEventPendingISR = false;
+      run201PulseQHeadISR = 0;
+      run201PulseQTailISR = 0;
+      run201ActiveISR = false;
       run201ArmISR = true;
       interrupts();
       bleNotifyChunks(statusChar, "201ARMED\n");
@@ -470,7 +476,9 @@ class DynoBleCommandCallbacks : public BLECharacteristicCallbacks {
     if (cmd.equalsIgnoreCase("201DISARM")) {
       noInterrupts();
       run201ArmISR = false;
-      run201PulseEventPendingISR = false;
+      run201ActiveISR = false;
+      run201PulseQHeadISR = 0;
+      run201PulseQTailISR = 0;
       interrupts();
       bleNotifyChunks(statusChar, "201DISARMED\n");
       return;
@@ -726,18 +734,39 @@ volatile bool hallNewPeriodReadyISR = false;
 volatile uint32_t hallRejectedPulseCountISR = 0;
 volatile uint32_t hallValidPulseCountISR = 0;
 
+static inline void IRAM_ATTR queueRun201PulseISR(
+    uint32_t pulseCount,
+    uint32_t edgeUs
+) {
+  if (run201ArmISR) {
+    run201ArmISR = false;
+    run201ActiveISR = true;
+  }
+
+  if (!run201ActiveISR) return;
+
+  uint8_t head = run201PulseQHeadISR;
+  uint8_t next =
+      (uint8_t)((head + 1U) % RUN201_PULSE_QUEUE_SIZE);
+
+  // If the queue is full, discard the oldest item rather than blocking ISR.
+  if (next == run201PulseQTailISR) {
+    run201PulseQTailISR =
+        (uint8_t)((run201PulseQTailISR + 1U) % RUN201_PULSE_QUEUE_SIZE);
+  }
+
+  run201PulseCountQueueISR[head] = pulseCount;
+  run201PulseEdgeUsQueueISR[head] = edgeUs;
+  run201PulseQHeadISR = next;
+}
+
 void IRAM_ATTR hallISR() {
   uint32_t now = micros();
 
   if (hallLastValidEdgeUsISR == 0) {
     hallLastValidEdgeUsISR = now;
     hallValidPulseCountISR++;
-    if (run201ArmISR) {
-      run201ArmISR = false;
-      run201PulseEventPendingISR = true;
-      run201PulseCountISR = hallValidPulseCountISR;
-      run201PulseEdgeUsISR = now;
-    }
+    queueRun201PulseISR(hallValidPulseCountISR, now);
     return;
   }
 
@@ -767,12 +796,7 @@ void IRAM_ATTR hallISR() {
   hallLastValidPeriodUsISR = dt;
   hallLastValidEdgeUsISR = now;
   hallValidPulseCountISR++;
-  if (run201ArmISR) {
-    run201ArmISR = false;
-    run201PulseEventPendingISR = true;
-    run201PulseCountISR = hallValidPulseCountISR;
-    run201PulseEdgeUsISR = now;
-  }
+  queueRun201PulseISR(hallValidPulseCountISR, now);
 }
 
 // ============================================================================
@@ -1058,21 +1082,28 @@ void loop() {
   // Wheel RPM.
   updateRollerFromHall(nowMs);
 
-  // Dedicated 201 m start event: the first valid Hall pulse after 201ARM.
-  bool run201PulseReady = false;
-  uint32_t run201PulseCount = 0;
-  uint32_t run201PulseEdgeUs = 0;
-  noInterrupts();
-  if (run201PulseEventPendingISR) {
-    run201PulseEventPendingISR = false;
-    run201PulseReady = true;
-    run201PulseCount = run201PulseCountISR;
-    run201PulseEdgeUs = run201PulseEdgeUsISR;
-  }
-  interrupts();
+  // Dedicated 201 m raw Hall stream.
+  // Drain queued valid pulses outside ISR and publish exact pulse timestamps.
+  for (uint8_t run201Drain = 0; run201Drain < 8; run201Drain++) {
+    bool run201PulseReady = false;
+    uint32_t run201PulseCount = 0;
+    uint32_t run201PulseEdgeUs = 0;
 
-  if (run201PulseReady) {
-    uint32_t pulseAgeUs = (uint32_t)(micros() - run201PulseEdgeUs);
+    noInterrupts();
+    if (run201PulseQTailISR != run201PulseQHeadISR) {
+      uint8_t tail = run201PulseQTailISR;
+      run201PulseCount = run201PulseCountQueueISR[tail];
+      run201PulseEdgeUs = run201PulseEdgeUsQueueISR[tail];
+      run201PulseQTailISR =
+          (uint8_t)((tail + 1U) % RUN201_PULSE_QUEUE_SIZE);
+      run201PulseReady = true;
+    }
+    interrupts();
+
+    if (!run201PulseReady) break;
+
+    uint32_t pulseAgeUs =
+        (uint32_t)(micros() - run201PulseEdgeUs);
     uint32_t pulseMs = nowMs - pulseAgeUs / 1000UL;
     dynoPublish201Pulse(run201PulseCount, pulseMs);
   }
