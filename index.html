@@ -138,11 +138,11 @@ main{display:none;min-height:0;overflow:hidden}.page.on{display:block;height:100
 .mobile-chart-legend{height:22px;display:flex;align-items:center;justify-content:center;gap:11px;border-top:1px solid #11161a;border-bottom:1px solid #11161a;background:#07090b;overflow:hidden;white-space:nowrap}
 .mobile-chart-legend .lg{position:relative;padding-left:15px;font:700 7px Arial,sans-serif;color:#adb5bd;letter-spacing:.2px}
 .mobile-chart-legend .lg:before{content:"";position:absolute;left:0;top:50%;width:11px;height:2px;transform:translateY(-50%);border-radius:2px}
-.mobile-chart-legend .hp:before{background:#ff3b30}
-.mobile-chart-legend .erpm:before{background:#ff6a00}
-.mobile-chart-legend .tq:before{background:#ffd400}
+.mobile-chart-legend .hp:before{background:#ff2d2d}
+.mobile-chart-legend .erpm:before{background:#facc15}
+.mobile-chart-legend .tq:before{background:#22c55e}
 .mobile-chart-legend .rrpm:before{background:#37d45a}
-.mobile-chart-legend .spd:before{background:#d3d6da}
+.mobile-chart-legend .spd:before{background:#3b82f6}
 .mobile-chart-legend .afr:before{background:#3488ff}
 .mobile-chart-legend .axis-note{margin-left:auto;padding-right:5px;color:#626c76;font:700 7px Arial,sans-serif}
 .chartwrap{overflow:hidden!important;min-width:0!important;min-height:0!important}
@@ -215,8 +215,8 @@ main{display:none;min-height:0;overflow:hidden}.page.on{display:block;height:100
 .power-peak b{font:900 17px Arial,sans-serif;line-height:1;color:#f3f5f7;white-space:nowrap;align-self:end}
 .power-peak em{font:800 7px Arial,sans-serif;color:#7c858e;font-style:normal;align-self:end}
 .power-peak .peak-rpm{grid-column:1/-1;display:block;width:100%;min-width:88px;text-align:center;font:900 11px Arial,sans-serif;color:#f3f5f7;letter-spacing:.35px;white-space:nowrap;line-height:1.15;overflow:visible}
-.hp-peak{border-color:#4d1b1e}.hp-peak b{color:#ff3b30}
-.tq-peak{border-color:#4c3518}.tq-peak b{color:#ffd400}
+.hp-peak{border-color:#4d1b1e}.hp-peak b{color:#ff2d2d}
+.tq-peak{border-color:#4c3518}.tq-peak b{color:#22c55e}
 @media(max-height:430px){
  #power .power-chart-box{grid-template-rows:27px 33px 19px minmax(0,1fr)!important}
  .power-peak-strip{height:33px;padding:1px 3px}
@@ -243,7 +243,7 @@ nav button.on{border-color:#ff7a00;background:linear-gradient(180deg,#4a2107,#1a
 .gauge,.centerbox,.chartbox,.card{border-color:#302117;background:linear-gradient(180deg,#0d0c0b,#070707)}
 .scale i{background:linear-gradient(90deg,#6c2a00,#ff6a00)}
 .controls{border-color:#392619;background:#090705ee}.controls .go{border-color:#8d430e;background:#261205}.controls .auto.on{color:#ffd19e;border-color:#8b4c14;background:#211005}
-.settingsgrid h3{color:#ff8126}.hp-peak{border-color:#6e3510}.hp-peak b{color:#ff3b30}.tq-peak{border-color:#5c461e}.tq-peak b{color:#ffd400}
+.settingsgrid h3{color:#ff8126}.hp-peak{border-color:#6e3510}.hp-peak b{color:#ff2d2d}.tq-peak{border-color:#5c461e}.tq-peak b{color:#22c55e}
 #live .live-title-banner span{color:#fff5eb}
 #live .live-monitor-head{border-color:#4a2915;background:linear-gradient(105deg,#0f0b08,#060606 50%,#100b07)}
 #live .live-head-slashes{background:repeating-linear-gradient(130deg,transparent 0 3px,#ff6a00 3px 5px)}
@@ -400,7 +400,7 @@ nav button.on{background:#111!important;color:#fff!important;border-color:#111!i
 main,.chartpage,#settings,#test201{background:#f4f4f2!important}
 .chartbox,.card,.gauge,.centerbox{background:#fff!important;border:1px solid #111!important;box-shadow:none!important}
 .charthead,.mobile-chart-legend{background:#fff!important;color:#111!important;border-color:#ccc!important}
-.mobile-chart-legend .erpm:before{background:#111!important}.mobile-chart-legend .spd:before{background:#777!important}
+.mobile-chart-legend .erpm:before{background:#facc15!important}.mobile-chart-legend .spd:before{background:#3b82f6!important}
 .controls{background:rgba(255,255,255,.96)!important;border:1px solid #111!important;box-shadow:0 4px 18px rgba(0,0,0,.15)!important}
 .controls .go,.controls .stop,.controls .auto.on{background:#111!important;color:#fff!important;border-color:#111!important}
 #live{background:#f4f4f2!important;color:#111!important}
@@ -429,6 +429,20 @@ main,.chartpage,#settings,#test201{background:#f4f4f2!important}
 #appNumPad{background:#fff!important;border-color:#111!important;box-shadow:0 10px 40px rgba(0,0,0,.25)!important}
 .app-np-key,#appNumPadHideTop{background:#fff!important;color:#111!important;border-color:#111!important}
 .app-np-key.save{background:#111!important;color:#fff!important}
+
+<style id="37tsr-signal-colors-v2">
+/* 37TSR fixed signal palette */
+.hp-peak b,#liveHpValue{color:#ff2d2d!important}
+.tq-peak b,#liveTorqueValue{color:#22c55e!important}
+.mobile-chart-legend .hp:before{background:#ff2d2d!important}
+.mobile-chart-legend .tq:before{background:#22c55e!important}
+.mobile-chart-legend .erpm:before{background:#facc15!important}
+.mobile-chart-legend .spd:before{background:#3b82f6!important}
+#liveRpmArc .classic-value{fill:#facc15!important}
+#liveRpmArc .classic-needle{stroke:#facc15!important}
+#liveSpeedArc .classic-value{fill:#3b82f6!important}
+#liveSpeedArc .classic-needle{stroke:#3b82f6!important}
+</style>
 </style>
 </head>
 <body>
@@ -1180,8 +1194,8 @@ function drawPowerTouch(g,P,d,xMin,xMax,hpY,tqY,axisIsEngine){
  var x=g.x;
  x.save();
  x.setLineDash([3,3]);x.strokeStyle='#8c5a2c';x.lineWidth=1;x.beginPath();x.moveTo(px,P.t);x.lineTo(px,P.b);x.stroke();x.setLineDash([]);
- x.fillStyle='#ff3b30';x.beginPath();x.arc(px,pyHp,3.5,0,Math.PI*2);x.fill();
- x.fillStyle='#ffd400';x.beginPath();x.arc(px,pyTq,3.5,0,Math.PI*2);x.fill();
+ x.fillStyle='#ff2d2d';x.beginPath();x.arc(px,pyHp,3.5,0,Math.PI*2);x.fill();
+ x.fillStyle='#22c55e';x.beginPath();x.arc(px,pyTq,3.5,0,Math.PI*2);x.fill();
  var bw=126,bh=51,bx=px+9,by=Math.max(P.t+4,Math.min(P.b-bh-4,Math.min(pyHp,pyTq)-bh/2));
  if(bx+bw>P.r-4)bx=px-bw-9;if(bx<P.l+4)bx=P.l+4;
  x.fillStyle='rgba(7,7,7,.94)';x.strokeStyle='#70411c';x.lineWidth=1;x.beginPath();
@@ -1189,8 +1203,8 @@ function drawPowerTouch(g,P,d,xMin,xMax,hpY,tqY,axisIsEngine){
  x.fill();x.stroke();
  x.font='800 9px Arial';x.textAlign='left';x.textBaseline='middle';
  x.fillStyle='#d7dce1';x.fillText((axisIsEngine?'RPM ':'ROLLER RPM ')+Math.round(rpm),bx+8,by+11);
- x.fillStyle='#ff3b30';x.fillText('HP '+hp.toFixed(1),bx+8,by+26);
- x.fillStyle='#ffd400';x.fillText('TOR '+tq.toFixed(1)+' Nm',bx+8,by+41);
+ x.fillStyle='#ff2d2d';x.fillText('HP '+hp.toFixed(1),bx+8,by+26);
+ x.fillStyle='#22c55e';x.fillText('TOR '+tq.toFixed(1)+' Nm',bx+8,by+41);
  x.restore();
 }
 function powerPointerLocalX(c,ev){
@@ -1266,21 +1280,21 @@ function drawPower(){
  var maxHp=pk.hp,maxTq=pk.tq,hpRpm=pk.hpRpm,tqRpm=pk.tqRpm;
  updatePowerPeakUI(maxHp,maxTq,hpRpm,tqRpm);
  var xMin=d&&d.length?Math.min.apply(null,d.map(function(a){return+a[0]})):0,xMax=d&&d.length?Math.max.apply(null,d.map(function(a){return+a[0]})):1;if(xMax<=xMin)xMax=xMin+1;
- var hpY=niceMax(maxHp*1.1),tqY=niceMax(maxTq*1.1),P=chartFrame(g,{xMin:xMin,xMax:xMax,xLabel:axisIsEngine?'ENGINE RPM':'ROLLER RPM',yMax:hpY,yLabel:'HP',yColor:'#ff3b30',right:{max:tqY,label:'TORQUE (Nm)',shortLabel:'Nm',color:'#ffd400'}});
+ var hpY=niceMax(maxHp*1.1),tqY=niceMax(maxTq*1.1),P=chartFrame(g,{xMin:xMin,xMax:xMax,xLabel:axisIsEngine?'ENGINE RPM':'ROLLER RPM',yMax:hpY,yLabel:'HP',yColor:'#ff2d2d',right:{max:tqY,label:'TORQUE (Nm)',shortLabel:'Nm',color:'#22c55e'}});
  S.powerHit={P:P,d:d,xMin:xMin,xMax:xMax,hpY:hpY,tqY:tqY,axisIsEngine:axisIsEngine};
  if(!d||d.length<2){chartEmpty(g,'NO SAVED RUN DATA');return}
- plotSeries(g,P,d,function(a){return+a[0]},function(a){return+a[1]},xMin,xMax,0,hpY,'#ff3b30',1.8);
- plotSeries(g,P,d,function(a){return+a[0]},function(a){return+a[2]},xMin,xMax,0,tqY,'#ffd400',1.8);
+ plotSeries(g,P,d,function(a){return+a[0]},function(a){return+a[1]},xMin,xMax,0,hpY,'#ff2d2d',1.8);
+ plotSeries(g,P,d,function(a){return+a[0]},function(a){return+a[2]},xMin,xMax,0,tqY,'#22c55e',1.8);
  drawPowerTouch(g,P,d,xMin,xMax,hpY,tqY,axisIsEngine)
 }
 function drawRpm(){
  var c=$('rpmCanvas'),g=setupCanvas(c),run=getSelectedRun(),d=S.recording?S.runRpm:(run?run.rpm:[]);
- if(!d||!d.length){var P0=chartFrame(g,{xMin:0,xMax:1,xLabel:'TIME (s)',yMax:n('maxRpm',16000),yLabel:'RPM',yColor:'#111',right:{max:n('maxSpeed',160),label:'SPEED km/h',shortLabel:'km/h',color:'#777'}});chartEmpty(g,'NO SAVED RUN DATA');return}
+ if(!d||!d.length){var P0=chartFrame(g,{xMin:0,xMax:1,xLabel:'TIME (s)',yMax:n('maxRpm',16000),yLabel:'RPM',yColor:'#facc15',right:{max:n('maxSpeed',160),label:'SPEED km/h',shortLabel:'km/h',color:'#3b82f6'}});chartEmpty(g,'NO SAVED RUN DATA');return}
  var t0=+d[0][0],td=d.map(function(a){return[(+a[0]-t0),+a[1],+a[2],+a[3],+a[4]]}),xMax=Math.max(1,td[td.length-1][0]),rpmY=niceMax(Math.max(1000,Math.max.apply(null,td.map(function(a){return a[1]||0})))*1.05),speedY=niceMax(Math.max(20,Math.max.apply(null,td.map(function(a){return a[3]||0})))*1.08);
- var P=chartFrame(g,{xMin:0,xMax:xMax,xLabel:'TIME (s)',xFmt:function(v){return v.toFixed(v<10?1:0)},yMax:rpmY,yLabel:'RPM',yColor:'#111',right:{max:speedY,label:'SPEED km/h',shortLabel:'km/h',color:'#777'}});
+ var P=chartFrame(g,{xMin:0,xMax:xMax,xLabel:'TIME (s)',xFmt:function(v){return v.toFixed(v<10?1:0)},yMax:rpmY,yLabel:'RPM',yColor:'#facc15',right:{max:speedY,label:'SPEED km/h',shortLabel:'km/h',color:'#3b82f6'}});
 
- plotSeries(g,P,td,function(a){return a[0]},function(a){return a[1]},0,xMax,0,rpmY,'#111111',1.7);
- plotSeries(g,P,td,function(a){return a[0]},function(a){return a[3]},0,xMax,0,speedY,'#777777',1.4);
+ plotSeries(g,P,td,function(a){return a[0]},function(a){return a[1]},0,xMax,0,rpmY,'#facc15',1.7);
+ plotSeries(g,P,td,function(a){return a[0]},function(a){return a[3]},0,xMax,0,speedY,'#3b82f6',1.4);
 }
 function getCompareIndices(){var out=[];document.querySelectorAll('#compareRunList input:checked').forEach(function(e){out.push(+e.value)});return out.slice(0,5)}
 function compareSeriesFor(run,metric){
@@ -1292,7 +1306,7 @@ function compareSeriesFor(run,metric){
 function drawCompare(){
  var c=$('compareCanvas');if(!c)return;var g=setupCanvas(c),idxs=getCompareIndices(),metric=$('compareMetric')?$('compareMetric').value:'hp',sets=[],all=[];
  idxs.forEach(function(idx){var r=runHistory[idx];if(!r)return;var d=compareSeriesFor(r,metric);sets.push({run:r,data:d});all=all.concat(d)});
- var yLabel=metric==='hp'?'POWER (HP)':metric==='tq'?'TORQUE (Nm)':metric==='speed'?'SPEED (km/h)':'AFR',yColor=metric==='tq'?'#ffd400':metric==='afr'?'#3488ff':metric==='speed'?'#d3d6da':'#ff3b30';
+ var yLabel=metric==='hp'?'POWER (HP)':metric==='tq'?'TORQUE (Nm)':metric==='speed'?'SPEED (km/h)':'AFR',yColor=metric==='tq'?'#22c55e':metric==='afr'?'#3488ff':metric==='speed'?'#3b82f6':'#ff2d2d';
  var xMin=all.length?Math.min.apply(null,all.map(function(a){return a[0]})):0,xMax=all.length?Math.max.apply(null,all.map(function(a){return a[0]})):1;if(xMax<=xMin)xMax=xMin+1;
  var yMin=metric==='afr'?10:0,yMax=metric==='afr'?20:niceMax(Math.max(1,all.length?Math.max.apply(null,all.map(function(a){return a[1]})):1)*1.1);
  var P=chartFrame(g,{xMin:xMin,xMax:xMax,xLabel:'ENGINE RPM / ROLLER RPM',yMin:yMin,yMax:yMax,yLabel:yLabel,yColor:yColor});
