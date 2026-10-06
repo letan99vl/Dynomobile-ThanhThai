@@ -1,0 +1,34 @@
+name: TSRDyno
+options:
+  bundleIdPrefix: vn.tsr37
+  deploymentTarget:
+    iOS: "15.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+targets:
+  TSRDyno:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: TSRDyno
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: vn.tsr37.dyno
+        PRODUCT_NAME: 37TSR Dyno
+        INFOPLIST_FILE: TSRDyno/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ENABLE_BITCODE: NO
+schemes:
+  TSRDyno:
+    build:
+      targets:
+        TSRDyno: all
+    run:
+      config: Debug
+    archive:
+      config: Release
