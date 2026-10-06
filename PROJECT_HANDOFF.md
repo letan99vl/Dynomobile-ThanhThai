@@ -4,7 +4,7 @@
 - Project: 37TSR Dyno / Dynomobile-ThanhThai
 - Repository: letan99vl/Dynomobile-ThanhThai
 - GitHub Pages: https://letan99vl.github.io/Dynomobile-ThanhThai/
-- Current visible web PB: **PB 1.003**
+- Current visible web PB: **PB 1.004**
 - Main branch current handoff baseline: **ba14b204c9c18edd80c15dd512a62d3faa53bc27**
 - Deployment mode: GitHub Pages **Deploy from branch -> main / root**.
 - The old duplicate custom Pages workflow was removed. Do not add a second Pages deploy workflow unless intentionally changing the deployment model.
@@ -13,10 +13,10 @@
 Every user-visible web/app change MUST increment the PB shown in the header:
 `2T · PB x.xxx`
 
-Current PB: `1.003`
+Current PB: `1.004`
 
 Recommended sequence:
-`1.003 -> 1.004 -> 1.005 ...`
+`1.004 -> 1.005 -> 1.006 ...`
 
 Whenever PB changes:
 1. Update the header `#buildTag` in `index.html`.
