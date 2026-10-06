@@ -335,6 +335,13 @@ BLECharacteristic *commandChar = nullptr;
 BLECharacteristic *statusChar = nullptr;
 volatile bool deviceConnected = false;
 
+// 201 m first-pulse arm/event state.
+// Must be declared before DynoBleCommandCallbacks because BLE commands access it.
+volatile bool run201ArmISR = false;
+volatile bool run201PulseEventPendingISR = false;
+volatile uint32_t run201PulseCountISR = 0;
+volatile uint32_t run201PulseEdgeUsISR = 0;
+
 static void bleNotifyChunks(BLECharacteristic *ch, const char *s) {
   if (!deviceConnected || ch == nullptr || s == nullptr) return;
 
@@ -718,10 +725,6 @@ volatile uint32_t hallNewPeriodUsISR = 0;
 volatile bool hallNewPeriodReadyISR = false;
 volatile uint32_t hallRejectedPulseCountISR = 0;
 volatile uint32_t hallValidPulseCountISR = 0;
-volatile bool run201ArmISR = false;
-volatile bool run201PulseEventPendingISR = false;
-volatile uint32_t run201PulseCountISR = 0;
-volatile uint32_t run201PulseEdgeUsISR = 0;
 
 void IRAM_ATTR hallISR() {
   uint32_t now = micros();
