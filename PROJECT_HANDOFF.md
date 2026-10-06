@@ -4,7 +4,7 @@
 - Project: 37TSR Dyno / Dynomobile-ThanhThai
 - Repository: letan99vl/Dynomobile-ThanhThai
 - GitHub Pages: https://letan99vl.github.io/Dynomobile-ThanhThai/
-- Current visible web PB: **PB 1.001**
+- Current visible web PB: **PB 1.003**
 - Main branch current handoff baseline: **ba14b204c9c18edd80c15dd512a62d3faa53bc27**
 - Deployment mode: GitHub Pages **Deploy from branch -> main / root**.
 - The old duplicate custom Pages workflow was removed. Do not add a second Pages deploy workflow unless intentionally changing the deployment model.
@@ -13,10 +13,10 @@
 Every user-visible web/app change MUST increment the PB shown in the header:
 `2T · PB x.xxx`
 
-Current PB: `1.001`
+Current PB: `1.003`
 
 Recommended sequence:
-`1.001 -> 1.002 -> 1.003 ...`
+`1.003 -> 1.004 -> 1.005 ...`
 
 Whenever PB changes:
 1. Update the header `#buildTag` in `index.html`.
@@ -46,6 +46,7 @@ This fork is for **37TSR**, focused on **2-stroke motorcycles**.
 
 Visual rules:
 - White / black / glass / transparent UI.
+- LIVE RPM/SPEED gauges intentionally have no concentric face/inner circles; keep ticks, labels, needle, hub and numeric readout only.
 - Classic analog gauges.
 - Gauge needles: black.
 - Gauge numeric readouts: black.
