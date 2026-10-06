@@ -1133,7 +1133,29 @@ function onStatus(e){try{
  }
 }catch(x){}}
 function onLive(e){var d=e.target.value,txt=dec.decode(new Uint8Array(d.buffer,d.byteOffset,d.byteLength));S.lineBuf+=txt;var i;while((i=S.lineBuf.indexOf('\n'))>=0){var line=S.lineBuf.slice(0,i).replace(/\r/g,'').trim();S.lineBuf=S.lineBuf.slice(i+1);handleLine(line)}}
-function handleLine(line){if(!line||line.charAt(0)!=='D')return;var p=line.split(',');if(p.length<5)return;var pc=p.length>5?Number(p[5]):NaN,pm=p.length>6?Number(p[6]):NaN;sample(+p[1],+p[2],correctEngineRpm(+p[3]),+p[4],pc,pm)}
+function start201FromPulse(pc,pm){
+ if(!S.wait201)return false;
+ S.rollerPulseCount=(pc>>>0);S.rollerPulseMs=(pm>>>0);S.pulseTelemetry=true;
+ S.wait201=false;S.run201=true;S.done201=false;S.d201=0;S.t2010=pm;S.t201last=pm;S.maxS201=0;S.maxR201=0;S.start201PulseCount=(pc>>>0);
+ test201Curve=[];clear201Splits();render201Splits();test201PrevSample={t:pm,speed:0,rpm:+S.rpm||0,rrpm:+S.rrpm||0};
+ var st=$('state201');if(st){st.textContent='RUNNING · FIRST ROLLER PULSE';st.className='test201-state running'}
+ return true
+}
+function handleLine(line){
+ if(!line)return;
+ var p=line.split(',');
+ if(p[0]==='P'){
+   if(p.length<3)return;
+   var pc=Number(p[1]),pm=Number(p[2]);
+   if(!isFinite(pc)||!isFinite(pm))return;
+   S.rollerPulseCount=(pc>>>0);S.rollerPulseMs=(pm>>>0);S.pulseTelemetry=true;
+   start201FromPulse(pc,pm);
+   return
+ }
+ if(p[0]!=='D'||p.length<5)return;
+ var pc=p.length>5?Number(p[5]):NaN,pm=p.length>6?Number(p[6]):NaN;
+ sample(+p[1],+p[2],correctEngineRpm(+p[3]),+p[4],pc,pm)
+}
 function sample(t,rr,r,v,pulseCount,pulseMs){
  if(!isFinite(t)||!isFinite(rr)||!isFinite(r)||!isFinite(v))return;
  if(isFinite(pulseCount)&&pulseCount>=0){S.rollerPulseCount=(pulseCount>>>0);S.pulseTelemetry=true}if(isFinite(pulseMs)&&pulseMs>=0)S.rollerPulseMs=(pulseMs>>>0);
@@ -1760,7 +1782,7 @@ document.addEventListener('keydown',function(e){
 },true);
 
 document.querySelectorAll('nav button').forEach(function(b){b.onclick=function(){showPage(b.dataset.page)}})
-$('bleTop').onclick=connectBle;$('ctlBle').onclick=connectBle;$('ctlRun').onclick=startRun;$('ctlStop').onclick=stopRun;$('ctlAuto').onclick=toggleAuto;$('ctlSim').onclick=toggleSim;if($('btnSaveSettings'))$('btnSaveSettings').onclick=function(){save(true);if(S.connected&&S.cmd)pushAllConfigToS3(S.cfgState!=='ready')};document.querySelectorAll('[data-smooth]').forEach(function(b){b.onclick=function(){setSmoothingLevel(this.dataset.smooth,true)}});$('run201').onclick=function(){reset201();S.arm201PulseCount=S.rollerPulseCount>>>0;S.wait201=true;var st=$('state201');st.textContent=S.pulseTelemetry?'ARMED · WAIT FIRST ROLLER PULSE':'ARMED · OLD FW WAIT ≥ 1 km/h';st.className='test201-state'};$('reset201').onclick=reset201;$('autoStart').onchange=function(){S.auto=this.checked;$('ctlAuto').classList.toggle('on',S.auto);save();pushConfigKey('autoStart')};$('autoEndRun').onchange=function(){S.autoEndRun=this.checked;S.runDeclineSinceMs=0;save();pushConfigKey('autoEndRun')};if($('shiftLightEnable'))$('shiftLightEnable').onchange=function(){save(false);pushConfigKey('shiftLightEnable')}
+$('bleTop').onclick=connectBle;$('ctlBle').onclick=connectBle;$('ctlRun').onclick=startRun;$('ctlStop').onclick=stopRun;$('ctlAuto').onclick=toggleAuto;$('ctlSim').onclick=toggleSim;if($('btnSaveSettings'))$('btnSaveSettings').onclick=function(){save(true);if(S.connected&&S.cmd)pushAllConfigToS3(S.cfgState!=='ready')};document.querySelectorAll('[data-smooth]').forEach(function(b){b.onclick=function(){setSmoothingLevel(this.dataset.smooth,true)}});$('run201').onclick=async function(){reset201();S.arm201PulseCount=S.rollerPulseCount>>>0;S.wait201=true;var st=$('state201');st.textContent='ARMED · WAIT FIRST ROLLER PULSE';st.className='test201-state';if(S.connected&&S.cmd){try{await writeCmd('201ARM')}catch(e){}}};$('reset201').onclick=function(){reset201();if(S.connected&&S.cmd)writeCmd('201DISARM')};$('autoStart').onchange=function(){S.auto=this.checked;$('ctlAuto').classList.toggle('on',S.auto);save();pushConfigKey('autoStart')};$('autoEndRun').onchange=function(){S.autoEndRun=this.checked;S.runDeclineSinceMs=0;save();pushConfigKey('autoEndRun')};if($('shiftLightEnable'))$('shiftLightEnable').onchange=function(){save(false);pushConfigKey('shiftLightEnable')}
 cfgIds.forEach(function(id){$(id).addEventListener('change',function(){save(false);if(id==='rpmFilterUs')pushRpmFilter();pushConfigKey(id)});$(id).addEventListener('input',function(){save(false)})});if($('rollerD201')){try{var d201Saved=localStorage.getItem('37tsr_rollerD201');$('rollerD201').value=d201Saved||($('rollerD')?$('rollerD').value:'240')}catch(e){};$('rollerD201').addEventListener('change',function(){try{localStorage.setItem('37tsr_rollerD201',this.value)}catch(e){}})};window.addEventListener('resize',drawAll);document.addEventListener('visibilitychange',function(){if(!document.hidden)drawAll()});load();initAppNumPad();restoreRunHistory();renderRunHistoryUI();bindRunHistoryUI();bindPowerChartTouch();reset201();try{console.log('37TSR 2T build - classic gauges, no AFR')}catch(e){};setBle(false);try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(function(){})}catch(e){};setTimeout(drawAll,100);
 })();
 </script>
