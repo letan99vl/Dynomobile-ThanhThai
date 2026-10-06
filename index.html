@@ -444,6 +444,36 @@ main,.chartpage,#settings,#test201{background:#f4f4f2!important}
 #liveSpeedArc .classic-needle{stroke:#3b82f6!important}
 </style>
 </style>
+
+<style id="37tsr-test201-v2">
+#test201{overflow:auto!important;padding:6px!important;background:#f4f4f2!important}
+.test201-grid{min-height:100%;display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);grid-template-rows:auto minmax(215px,1fr) auto;gap:6px}
+.test201-grid>.card{background:#fff!important;border:1px solid #111!important;color:#111!important}
+.test201-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.test201-title-row h2,.test201-splits-card h2,.test201-chart-card h2,.test201-history-card h2{margin:0 0 6px;font-size:12px;letter-spacing:.6px}
+.test201-dia{display:flex;align-items:center;gap:5px;white-space:nowrap;font:800 8px Arial;color:#555}
+.test201-dia input{width:72px;height:28px;border:1px solid #111;border-radius:6px;background:#fff;color:#111;padding:0 6px;text-align:center;font-weight:900}
+.test201-controls{margin:7px 0!important}.test201-controls button{height:31px;border:1px solid #111!important;background:#fff!important;color:#111!important;font-weight:900}.test201-controls #run201{background:#111!important;color:#fff!important}
+.test201-state{display:inline-flex;align-items:center;min-height:28px;padding:0 10px;border:1px solid #aaa;border-radius:999px;font:900 8px Arial;letter-spacing:.5px;background:#f7f7f5}
+.test201-state.running{background:#111;color:#fff;border-color:#111}.test201-state.done{background:#eaf7ee;color:#126b33;border-color:#22c55e}
+.test201-live-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+.test201-live-metrics .metric{min-width:0;background:#fafafa!important;border-color:#bbb!important;padding:7px!important}
+.test201-live-metrics .metric span{font-size:7px!important;color:#666!important}.test201-live-metrics .metric b{font-size:clamp(15px,3.8vh,27px)!important;color:#111!important;white-space:nowrap}.test201-live-metrics .metric em{display:block;margin-top:1px;font:700 7px Arial;color:#777;font-style:normal}
+.test201-live-metrics .metric.speed b{color:#3b82f6!important}.test201-live-metrics .metric.rpm b{color:#f0b800!important}
+.test201-split-table{display:grid;border:1px solid #111;border-radius:8px;overflow:hidden}
+.split-row{display:grid;grid-template-columns:1.15fr .85fr .9fr 1fr 1fr;align-items:center;min-height:34px;border-bottom:1px solid #ddd}
+.split-row:last-child{border-bottom:0}.split-row>*{padding:5px 7px;min-width:0;font:800 9px Arial;white-space:nowrap}.split-row b{font-weight:900}.split-row b small{display:block;color:#888;font:700 6px Arial;margin-top:2px}.split-row span{text-align:right;font-variant-numeric:tabular-nums}
+.split-head{min-height:25px;background:#111;color:#fff}.split-head>*{font-size:6px!important;letter-spacing:.4px}.split-row.final{background:#f3f3ef}.split-row.final b{font-size:10px}
+.test201-chart-card{grid-column:1/-1;min-height:215px;padding:7px!important;display:grid;grid-template-rows:28px minmax(0,1fr)}
+.test201-chart-head{display:flex;align-items:center;justify-content:space-between}.test201-chart-head h2{margin:0}
+.test201-chart-legend{display:flex;gap:14px;font:800 7px Arial;color:#555}.test201-chart-legend span{position:relative;padding-left:15px}.test201-chart-legend span:before{content:"";position:absolute;left:0;top:50%;width:11px;height:2px;transform:translateY(-50%)}.test201-chart-legend .engine:before{background:#facc15}.test201-chart-legend .roller:before{background:#8b95a1}
+.test201-chart-wrap{min-height:0;position:relative;overflow:hidden}.test201-chart-wrap canvas{width:100%!important;height:100%!important;display:block}
+.test201-history-card{grid-column:1/-1;padding:7px!important}.test201-history{overflow:auto;max-height:155px;border:1px solid #bbb;border-radius:7px}
+.test201-history table{width:100%;border-collapse:collapse;font:700 8px Arial}.test201-history th{position:sticky;top:0;background:#111;color:#fff;text-align:right;padding:6px}.test201-history th:first-child,.test201-history th:last-child{text-align:left}.test201-history td{padding:6px;border-bottom:1px solid #ddd;text-align:right;font-variant-numeric:tabular-nums}.test201-history td:first-child,.test201-history td:last-child{text-align:left}
+@media(max-height:430px){
+ #test201{padding:4px!important}.test201-grid{gap:4px;grid-template-rows:auto minmax(165px,1fr) auto}.test201-title-row h2,.test201-splits-card h2,.test201-chart-card h2,.test201-history-card h2{font-size:9px;margin-bottom:3px}.test201-title-row .note{display:none}.test201-dia input{height:23px;width:58px}.test201-controls{margin:3px 0!important}.test201-controls button{height:25px;font-size:8px}.test201-state{min-height:23px;font-size:6px}.test201-live-metrics{gap:3px}.test201-live-metrics .metric{padding:4px!important}.test201-live-metrics .metric b{font-size:clamp(12px,3.2vh,20px)!important}.split-row{min-height:26px}.split-row>*{padding:3px 5px;font-size:7px}.split-head{min-height:21px}.test201-chart-card{min-height:165px;grid-template-rows:22px minmax(0,1fr)}.test201-history{max-height:105px}
+}
+</style>
 </head>
 <body>
 <div id="app">
@@ -514,12 +544,47 @@ main,.chartpage,#settings,#test201{background:#f4f4f2!important}
  </section>
 </main>
 
+
 <main id="test201" class="page">
- <div class="twocol">
-  <section class="card"><h2>201 m RUN</h2><div class="row"><button id="run201">RUN 201m</button><button id="reset201">RESET</button><span id="state201" class="note">Waiting</span></div>
-   <div class="metricgrid"><div class="metric"><span>DISTANCE</span><b id="dist201">0.0 m</b></div><div class="metric"><span>TIME</span><b id="time201">--</b></div><div class="metric"><span>SPEED</span><b id="speed201">0.0</b></div><div class="metric"><span>RPM</span><b id="rpm201">0</b></div></div>
+ <div class="test201-grid">
+  <section class="card test201-live-card">
+   <div class="test201-title-row">
+    <div>
+     <h2>201 m / 1/8 mi TEST</h2>
+     <p class="note">Press RUN. Timing starts automatically when calculated speed reaches ≥ 1 km/h.</p>
+    </div>
+    <label class="test201-dia">WHEEL Ø <input id="rollerD201" type="number" min="1" step="1" value="240"> mm</label>
+   </div>
+   <div class="row test201-controls"><button id="run201">RUN 201m</button><button id="reset201">RESET</button><span id="state201" class="test201-state">WAITING</span></div>
+   <div class="test201-live-metrics">
+    <div class="metric"><span>DISTANCE</span><b id="dist201">0.0 m</b></div>
+    <div class="metric"><span>TIME</span><b id="time201">--</b></div>
+    <div class="metric speed"><span>SPEED</span><b id="speed201">0.0</b><em>km/h</em></div>
+    <div class="metric rpm"><span>ENGINE RPM</span><b id="rpm201">0</b></div>
+    <div class="metric"><span>ROLLER RPM</span><b id="rollerRpm201">0</b></div>
+   </div>
   </section>
-  <section class="card"><h2>RESULT</h2><div class="metricgrid"><div class="metric"><span>201 m</span><b id="result201">--</b></div><div class="metric"><span>MAX SPEED</span><b id="maxSpeed201">0.0</b></div><div class="metric"><span>MAX RPM</span><b id="maxRpm201">0</b></div></div><p class="note">Timer starts when calculated vehicle speed reaches 1 km/h.</p></section>
+
+  <section class="card test201-splits-card">
+   <h2>SPLIT TIMES</h2>
+   <div class="test201-split-table">
+    <div class="split-row split-head"><span>POINT</span><span>TIME</span><span>SPEED</span><span>ENGINE RPM</span><span>ROLLER RPM</span></div>
+    <div class="split-row"><b>60 ft <small>18.288 m</small></b><span id="split-ft60-time">--</span><span id="split-ft60-speed">--</span><span id="split-ft60-rpm">--</span><span id="split-ft60-rrpm">--</span></div>
+    <div class="split-row"><b>1/16 mi <small>100.584 m</small></b><span id="split-mi16-time">--</span><span id="split-mi16-speed">--</span><span id="split-mi16-rpm">--</span><span id="split-mi16-rrpm">--</span></div>
+    <div class="split-row"><b>201 m</b><span id="split-m201-time">--</span><span id="split-m201-speed">--</span><span id="split-m201-rpm">--</span><span id="split-m201-rrpm">--</span></div>
+    <div class="split-row final"><b>1/8 mi <small>201.168 m</small></b><span id="split-mi8-time">--</span><span id="split-mi8-speed">--</span><span id="split-mi8-rpm">--</span><span id="split-mi8-rrpm">--</span></div>
+   </div>
+  </section>
+
+  <section class="card test201-chart-card">
+   <div class="test201-chart-head"><h2>RPM VS DISTANCE</h2><div class="test201-chart-legend"><span class="engine">ENGINE RPM</span><span class="roller">ROLLER RPM</span></div></div>
+   <div class="test201-chart-wrap"><canvas id="test201Canvas"></canvas></div>
+  </section>
+
+  <section class="card test201-history-card">
+   <h2>RUN HISTORY</h2>
+   <div id="test201History" class="test201-history"><span class="note">NO RUN DATA YET</span></div>
+  </section>
  </div>
 </main>
 
@@ -597,6 +662,15 @@ var runHistory=[],selectedRunIndex=-1,RUN_HISTORY_KEY='dynotl_mobile_runs_v2',RU
 var OMEGA_EMA_K=0.15,ALPHA_WINDOW_N=10,ROLLER_STARTUP_SKIP_SAMPLES=4;
 var ROLLER_DISTINCT_EPS_RPM=0.5,ROLLER_JUMP_MIN_RPM=250.0,ROLLER_JUMP_RATIO=0.55,ROLLER_JUMP_MAX_DT_MS=300.0,ROLLER_JUMP_COOLDOWN_SAMPLES=2;
 var AUTO_END_DECLINE_MS=3000,AUTO_END_DROP_MIN_RPM=20,AUTO_END_DROP_RATIO=0.01,AUTO_END_RECOVER_RATIO=0.004;
+var TEST201_MARKS=[
+ {key:'ft60',label:'60 ft',m:18.288},
+ {key:'mi16',label:'1/16 mi',m:100.584},
+ {key:'m201',label:'201 m',m:201.0},
+ {key:'mi8',label:'1/8 mi',m:201.168}
+],TEST201_END_M=201.168;
+var test201Splits={},test201History=[],test201Curve=[],test201PrevSample=null;
+function clear201Splits(){test201Splits={};TEST201_MARKS.forEach(function(m){test201Splits[m.key]=null})}
+clear201Splits();
 
 // SIM emulates the ESP32 VIP one-magnet wheel sensor path, then emits the same
 // D,timeMs,wheelRPM,engineRPM,afrVoltage packets as BLE hardware.
@@ -901,7 +975,7 @@ function sample(t,rr,r,v){
  }
  S.liveRpmPts.push([t/1000,r,rr,speed,afr]);
  if(S.liveRpmPts.length>400)S.liveRpmPts.shift();
- update201(t,speed,r,afr);drawAll()
+ update201(t,r,rr);drawAll()
 }
 function updateLive(){$('liveRpm').textContent=Math.round(S.rpm);$('liveSpeed').textContent=S.speed.toFixed(0);$('liveAfr').textContent=isFinite(S.afr)?S.afr.toFixed(1):'--';$('liveHp').textContent=S.hp.toFixed(1);$('liveTq').textContent=S.tq.toFixed(1);$('rpmBar').style.width=Math.min(100,S.rpm/n('maxRpm',16000)*100)+'%';$('speedBar').style.width=Math.min(100,S.speed/n('maxSpeed',160)*100)+'%'}
 function showPage(pageId){
@@ -1051,8 +1125,66 @@ function toggleSim(){
  if(S.sim){resetSimulator();setBle(false,'SIM 1-MAG');simStep()}
  else{setBle(S.connected,S.connected?'BLE OK':'BLE OFF')}
 }
-function update201(t,speed,rpm,afr){if(S.wait201&&speed>=1){S.wait201=false;S.run201=true;S.t2010=S.t201last=t;S.d201=0;$('state201').textContent='RUNNING'}if(!S.run201)return;var dt=(t-S.t201last)/1000;if(dt>0&&dt<1)S.d201+=speed/3.6*dt;S.t201last=t;S.maxS201=Math.max(S.maxS201,speed);S.maxR201=Math.max(S.maxR201,rpm);$('dist201').textContent=S.d201.toFixed(1)+' m';$('time201').textContent=((t-S.t2010)/1000).toFixed(3)+' s';$('speed201').textContent=speed.toFixed(1);$('rpm201').textContent=Math.round(rpm);if(S.d201>=201){S.run201=false;S.done201=true;var tt=(t-S.t2010)/1000;$('state201').textContent='DONE';$('result201').textContent=tt.toFixed(3)+' s';$('maxSpeed201').textContent=S.maxS201.toFixed(1);$('maxRpm201').textContent=Math.round(S.maxR201)}}
-function reset201(){S.run201=S.wait201=S.done201=false;S.d201=0;S.maxS201=S.maxR201=0;$('state201').textContent='Waiting';$('dist201').textContent='0.0 m';$('time201').textContent='--';$('speed201').textContent='0.0';$('rpm201').textContent='0';$('result201').textContent='--';$('maxSpeed201').textContent='0.0';$('maxRpm201').textContent='0'}
+function format201Split(v){
+ if(!v)return{time:'--',speed:'--',rpm:'--',rrpm:'--'};
+ return{time:v.time_s.toFixed(3)+' s',speed:v.speed_kmh.toFixed(1)+' km/h',rpm:Math.round(v.rpmE)+'',rrpm:Math.round(v.rpmR)+''}
+}
+function render201Splits(){
+ TEST201_MARKS.forEach(function(m){var v=format201Split(test201Splits[m.key]),e;
+  if((e=$('split-'+m.key+'-time')))e.textContent=v.time;
+  if((e=$('split-'+m.key+'-speed')))e.textContent=v.speed;
+  if((e=$('split-'+m.key+'-rpm')))e.textContent=v.rpm;
+  if((e=$('split-'+m.key+'-rrpm')))e.textContent=v.rrpm;
+ })
+}
+function render201History(){
+ var box=$('test201History');if(!box)return;
+ if(!test201History.length){box.innerHTML='<span class="note" style="display:block;padding:8px">NO RUN DATA YET</span>';return}
+ var html='<table><thead><tr><th>#</th><th>60 ft</th><th>1/16 mi</th><th>201 m</th><th>1/8 mi</th><th>V@1/8</th><th>TIME</th></tr></thead><tbody>';
+ for(var i=test201History.length-1;i>=0;i--){var r=test201History[i],a=r.splits||{},f=function(k){return a[k]?a[k].time_s.toFixed(3):'--'},v=a.mi8?a.mi8.speed_kmh.toFixed(1):'--';
+  html+='<tr><td>#'+r.seq+'</td><td>'+f('ft60')+'</td><td>'+f('mi16')+'</td><td>'+f('m201')+'</td><td>'+f('mi8')+'</td><td>'+v+'</td><td>'+r.timestamp+'</td></tr>'
+ }
+ box.innerHTML=html+'</tbody></table>'
+}
+function capture201Split(mark,prevD,newD,prevT,t,prev,cur){
+ if(test201Splits[mark.key]||newD<mark.m||newD<=prevD)return;
+ var f=(mark.m-prevD)/(newD-prevD);if(!isFinite(f))f=1;f=Math.max(0,Math.min(1,f));
+ var crossT=prevT+(t-prevT)*f;
+ var mix=function(a,b){a=+a||0;b=+b||0;return a+(b-a)*f};
+ test201Splits[mark.key]={time_s:Math.max(0,(crossT-S.t2010)/1000),speed_kmh:mix(prev.speed,cur.speed),rpmE:mix(prev.rpm,cur.rpm),rpmR:mix(prev.rrpm,cur.rrpm),distance_m:mark.m};
+ render201Splits()
+}
+function update201(t,rpm,rrpm){
+ var dmm=n('rollerD201',n('rollerD',240)),dia=dmm/1000;if(!isFinite(dia)||dia<=0)dia=n('rollerD',240)/1000;
+ var speed=(+rrpm||0)*Math.PI*dia/60*3.6;if(!isFinite(speed)||speed<0)speed=0;
+ if(S.wait201&&speed>=1){
+  S.wait201=false;S.run201=true;S.done201=false;S.d201=0;S.t2010=S.t201last=t;S.maxS201=0;S.maxR201=0;
+  test201Curve=[];clear201Splits();render201Splits();test201PrevSample={t:t,speed:speed,rpm:+rpm||0,rrpm:+rrpm||0};
+  var st=$('state201');st.textContent='RUNNING · START ≥ 1 km/h';st.className='test201-state running'
+ }
+ if(!S.run201)return;
+ if(!(t>S.t201last))return;
+ var prevT=S.t201last,dt=(t-prevT)/1000,prevD=S.d201,prev=test201PrevSample||{t:prevT,speed:speed,rpm:+rpm||0,rrpm:+rrpm||0};
+ S.d201+=speed/3.6*dt;S.t201last=t;S.maxS201=Math.max(S.maxS201,speed);S.maxR201=Math.max(S.maxR201,+rpm||0);
+ var now={t:t,speed:speed,rpm:+rpm||0,rrpm:+rrpm||0},elapsed=Math.max(0,(t-S.t2010)/1000);
+ $('dist201').textContent=S.d201.toFixed(1)+' m';$('time201').textContent=elapsed.toFixed(3)+' s';$('speed201').textContent=speed.toFixed(1);$('rpm201').textContent=Math.round(+rpm||0);$('rollerRpm201').textContent=Math.round(+rrpm||0);
+ test201Curve.push([S.d201,+rpm||0,+rrpm||0,speed]);if(test201Curve.length>900)test201Curve.shift();
+ TEST201_MARKS.forEach(function(m){capture201Split(m,prevD,S.d201,prevT,t,prev,now)});
+ test201PrevSample=now;draw201Chart();
+ if(S.d201>=TEST201_END_M){
+  S.run201=false;S.done201=true;
+  var st=$('state201'),fin=test201Splits.mi8||{time_s:elapsed,speed_kmh:speed,rpmE:+rpm||0,rpmR:+rrpm||0};st.textContent='DONE · 1/8 mi '+fin.time_s.toFixed(3)+' s';st.className='test201-state done';
+  var snap={};TEST201_MARKS.forEach(function(m){var x=test201Splits[m.key];snap[m.key]=x?Object.assign({},x):null});
+  test201History.push({seq:test201History.length+1,splits:snap,maxSpeed:S.maxS201,maxRpm:S.maxR201,timestamp:new Date().toLocaleTimeString('en-GB',{hour12:false})});
+  if(test201History.length>12)test201History.shift();render201History()
+ }
+}
+function reset201(){
+ S.run201=S.wait201=S.done201=false;S.d201=0;S.t2010=S.t201last=0;S.maxS201=S.maxR201=0;test201Curve=[];test201PrevSample=null;clear201Splits();
+ var st=$('state201');if(st){st.textContent='WAITING';st.className='test201-state'}
+ if($('dist201'))$('dist201').textContent='0.0 m';if($('time201'))$('time201').textContent='--';if($('speed201'))$('speed201').textContent='0.0';if($('rpm201'))$('rpm201').textContent='0';if($('rollerRpm201'))$('rollerRpm201').textContent='0';
+ render201Splits();render201History();draw201Chart()
+}
 function setupCanvas(c){
  var dpr=Math.min(window.devicePixelRatio||1,3);
  var w=Math.max(20,c.clientWidth||c.parentElement.clientWidth||300);
@@ -1303,6 +1435,14 @@ function compareSeriesFor(run,metric){
  if(metric==='speed')return(run.rpm||[]).map(function(a){return[+a[1]||+a[2],+a[3]]});
  return(run.rpm||[]).map(function(a){return[+a[1]||+a[2],+a[4]]})
 }
+function draw201Chart(){
+ var c=$('test201Canvas');if(!c)return;var g=setupCanvas(c),d=test201Curve||[],rpmY=niceMax(Math.max(1000,d.length?Math.max.apply(null,d.map(function(a){return+a[1]||0})):n('maxRpm',16000))),rrY=niceMax(Math.max(200,d.length?Math.max.apply(null,d.map(function(a){return+a[2]||0})):1000));
+ var P=chartFrame(g,{xMin:0,xMax:TEST201_END_M,xLabel:'DISTANCE (m)',xFmt:function(v){return v.toFixed(0)},yMax:rpmY,yLabel:'ENGINE RPM',yColor:'#facc15',right:{max:rrY,label:'ROLLER RPM',shortLabel:'R-RPM',color:'#8b95a1'}});
+ var x=g.x;TEST201_MARKS.forEach(function(m){var px=P.l+(m.m/TEST201_END_M)*P.w;x.save();x.strokeStyle=m.key==='mi8'?'#111':'#6b7280';x.globalAlpha=.48;x.setLineDash([3,3]);x.beginPath();x.moveTo(px,P.t);x.lineTo(px,P.b);x.stroke();x.setLineDash([]);x.globalAlpha=1;x.fillStyle='#6b7280';x.textAlign='center';x.font='700 6px Arial';x.fillText(m.label,px,P.t+15);x.restore()});
+ if(!d.length){chartEmpty(g,'RUN 201m TO RECORD RPM VS DISTANCE');return}
+ plotSeries(g,P,d,function(a){return+a[0]},function(a){return+a[1]},0,TEST201_END_M,0,rpmY,'#facc15',1.8);
+ plotSeries(g,P,d,function(a){return+a[0]},function(a){return+a[2]},0,TEST201_END_M,0,rrY,'#8b95a1',1.5)
+}
 function drawCompare(){
  var c=$('compareCanvas');if(!c)return;var g=setupCanvas(c),idxs=getCompareIndices(),metric=$('compareMetric')?$('compareMetric').value:'hp',sets=[],all=[];
  idxs.forEach(function(idx){var r=runHistory[idx];if(!r)return;var d=compareSeriesFor(r,metric);sets.push({run:r,data:d});all=all.concat(d)});
@@ -1314,7 +1454,7 @@ function drawCompare(){
  if(sets.length<2){chartEmpty(g,'SELECT 2–5 SAVED RUNS');return}
  sets.forEach(function(s,i){plotSeries(g,P,s.data,function(a){return a[0]},function(a){return a[1]},xMin,xMax,yMin,yMax,pal[i%pal.length],1.8)})
 }
-function drawAll(){drawPower();drawRpm();drawCompare()}
+function drawAll(){drawPower();drawRpm();drawCompare();draw201Chart()}
 
 function saveCurrentRun(){
  if(!S.runPower||S.runPower.length<2||!S.runRpm||S.runRpm.length<2)return;
@@ -1368,8 +1508,8 @@ document.addEventListener('keydown',function(e){
 },true);
 
 document.querySelectorAll('nav button').forEach(function(b){b.onclick=function(){showPage(b.dataset.page)}})
-$('bleTop').onclick=connectBle;$('ctlBle').onclick=connectBle;$('ctlRun').onclick=startRun;$('ctlStop').onclick=stopRun;$('ctlAuto').onclick=toggleAuto;$('ctlSim').onclick=toggleSim;if($('btnSaveSettings'))$('btnSaveSettings').onclick=function(){save(true);if(S.connected&&S.cmd)pushAllConfigToS3(S.cfgState!=='ready')};document.querySelectorAll('[data-smooth]').forEach(function(b){b.onclick=function(){setSmoothingLevel(this.dataset.smooth,true)}});$('run201').onclick=function(){reset201();S.wait201=true;$('state201').textContent='Waiting ≥ 1 km/h'};$('reset201').onclick=reset201;$('autoStart').onchange=function(){S.auto=this.checked;$('ctlAuto').classList.toggle('on',S.auto);save();pushConfigKey('autoStart')};$('autoEndRun').onchange=function(){S.autoEndRun=this.checked;S.runDeclineSinceMs=0;save();pushConfigKey('autoEndRun')}
-cfgIds.forEach(function(id){$(id).addEventListener('change',function(){save(false);if(id==='rpmFilterUs')pushRpmFilter();pushConfigKey(id)});$(id).addEventListener('input',function(){save(false)})});window.addEventListener('resize',drawAll);document.addEventListener('visibilitychange',function(){if(!document.hidden)drawAll()});load();initAppNumPad();restoreRunHistory();renderRunHistoryUI();bindRunHistoryUI();bindPowerChartTouch();reset201();try{console.log('37TSR 2T build - classic gauges, no AFR')}catch(e){};setBle(false);try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(function(){})}catch(e){};setTimeout(drawAll,100);
+$('bleTop').onclick=connectBle;$('ctlBle').onclick=connectBle;$('ctlRun').onclick=startRun;$('ctlStop').onclick=stopRun;$('ctlAuto').onclick=toggleAuto;$('ctlSim').onclick=toggleSim;if($('btnSaveSettings'))$('btnSaveSettings').onclick=function(){save(true);if(S.connected&&S.cmd)pushAllConfigToS3(S.cfgState!=='ready')};document.querySelectorAll('[data-smooth]').forEach(function(b){b.onclick=function(){setSmoothingLevel(this.dataset.smooth,true)}});$('run201').onclick=function(){reset201();S.wait201=true;var st=$('state201');st.textContent='WAITING ≥ 1 km/h';st.className='test201-state'};$('reset201').onclick=reset201;$('autoStart').onchange=function(){S.auto=this.checked;$('ctlAuto').classList.toggle('on',S.auto);save();pushConfigKey('autoStart')};$('autoEndRun').onchange=function(){S.autoEndRun=this.checked;S.runDeclineSinceMs=0;save();pushConfigKey('autoEndRun')}
+cfgIds.forEach(function(id){$(id).addEventListener('change',function(){save(false);if(id==='rpmFilterUs')pushRpmFilter();pushConfigKey(id)});$(id).addEventListener('input',function(){save(false)})});if($('rollerD201')){try{var d201Saved=localStorage.getItem('37tsr_rollerD201');$('rollerD201').value=d201Saved||($('rollerD')?$('rollerD').value:'240')}catch(e){};$('rollerD201').addEventListener('change',function(){try{localStorage.setItem('37tsr_rollerD201',this.value)}catch(e){}})};window.addEventListener('resize',drawAll);document.addEventListener('visibilitychange',function(){if(!document.hidden)drawAll()});load();initAppNumPad();restoreRunHistory();renderRunHistoryUI();bindRunHistoryUI();bindPowerChartTouch();reset201();try{console.log('37TSR 2T build - classic gauges, no AFR')}catch(e){};setBle(false);try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(function(){})}catch(e){};setTimeout(drawAll,100);
 })();
 </script>
 <script id="original-pc-live-adapter">
