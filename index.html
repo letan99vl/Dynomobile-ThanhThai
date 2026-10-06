@@ -598,35 +598,38 @@ main,.chartpage,#settings,#test201,#live{
 </style>
 
 <style id="37tsr-exhaust-background">
-html{background:#e9e8e5!important}
-body,#app{background:transparent!important}
-body{position:relative}
-#exhaustBgLayer{
-  position:fixed;
-  inset:0;
-  z-index:0;
-  pointer-events:none;
+html,body{background:#ecebe8!important}
+body{position:relative!important}
+#exhaustBgLayer{display:none!important}
+#app{
+  position:relative!important;
+  z-index:1!important;
   background:
-    linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,.06) 44%,rgba(255,255,255,.20)),
-    radial-gradient(circle at center,rgba(255,255,255,0) 0 34%,rgba(255,255,255,.12) 76%,rgba(255,255,255,.28) 100%),
-    url("./assets/37tsr-exhaust-bg.webp?v=3") center 54% / min(72vw,920px) auto no-repeat;
-  filter:grayscale(.18) contrast(.98) brightness(1.03);
+    linear-gradient(rgba(255,255,255,.32),rgba(255,255,255,.32)),
+    url("./assets/37tsr-exhaust-bg.webp?v=4") center 53% / min(76vw,980px) auto no-repeat fixed!important;
+  background-blend-mode:normal,multiply!important;
 }
-#app{position:relative;z-index:1}
 header{position:relative;z-index:3}
-#live .live-arc-card{background:rgba(255,255,255,.14)!important}
-#live .classic-face{fill:rgba(255,255,255,.18)!important}
-#live .classic-inner{fill:rgba(255,255,255,.08)!important}
-#live .live-kpi{background:rgba(255,255,255,.22)!important}
+main,.chartpage,#settings,#test201,#live{background:transparent!important}
+#live .live-monitor-head,
+#live .live-info-strip,
+#live .live-kpi,
+#live .live-arc-card,
 .card,.chartbox,.centerbox,.test201-grid>.card,#settings .card{
-  background:rgba(255,255,255,.34)!important;
+  background:rgba(255,255,255,.22)!important;
+  -webkit-backdrop-filter:blur(7px) saturate(108%)!important;
+  backdrop-filter:blur(7px) saturate(108%)!important;
 }
+#live .classic-face{fill:rgba(255,255,255,.10)!important}
+#live .classic-inner{fill:rgba(255,255,255,.04)!important}
+#live .live-kpi{background:rgba(255,255,255,.16)!important}
+.charthead,.mobile-chart-legend{background:rgba(255,255,255,.18)!important}
+.controls{background:rgba(255,255,255,.28)!important}
 @media(max-width:900px){
-  #exhaustBgLayer{
+  #app{
     background:
-      linear-gradient(180deg,rgba(255,255,255,.46),rgba(255,255,255,.18) 44%,rgba(255,255,255,.34)),
-      radial-gradient(circle at center,rgba(255,255,255,0) 0 30%,rgba(255,255,255,.24) 76%,rgba(255,255,255,.46) 100%),
-      url("./assets/37tsr-exhaust-bg.webp?v=3") center 55% / 88vw auto no-repeat;
+      linear-gradient(rgba(255,255,255,.36),rgba(255,255,255,.36)),
+      url("./assets/37tsr-exhaust-bg.webp?v=4") center 54% / 92vw auto no-repeat fixed!important;
   }
 }
 </style>
