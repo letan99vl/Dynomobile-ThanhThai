@@ -1107,8 +1107,12 @@ void loop() {
     uint32_t hallPulseMsSnapshot = 0;
     noInterrupts();
     hallPulseCountSnapshot = hallValidPulseCountISR;
-    hallPulseMsSnapshot = hallLastValidEdgeUsISR / 1000UL;
+    uint32_t hallLastEdgeUsSnapshot = hallLastValidEdgeUsISR;
     interrupts();
+    if (hallLastEdgeUsSnapshot != 0) {
+      uint32_t edgeAgeUs = (uint32_t)(micros() - hallLastEdgeUsSnapshot);
+      hallPulseMsSnapshot = nowMs - edgeAgeUs / 1000UL;
+    }
     dynoPublishSample(
         nowMs,
         rollerRPMOutput,
