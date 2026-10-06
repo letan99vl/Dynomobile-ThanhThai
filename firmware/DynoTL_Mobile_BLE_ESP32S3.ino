@@ -18,6 +18,7 @@
 #define HALL_PIN    18
 #define ENGINE_PIN  16
 #define AFR_PIN     4
+#define SHIFT_LIGHT_PIN 6
 
 // ============================================================================
 // SENSOR CONFIG - PRESERVED FROM VIP CODE
@@ -63,6 +64,9 @@ float cfgAutoHp = 1.0f;
 float cfgAutoAlpha = 10.0f;
 bool cfgAutoStart = false;
 bool cfgAutoEndRun = true;
+bool cfgShiftLightEnable = false;
+uint32_t cfgShiftRpm = 10000;
+uint32_t cfgShiftBlinkRpm = 12000;
 uint8_t cfgSmoothingLevel = 1;
 
 const uint32_t ROLLER_ABS_MIN_PERIOD_US = 6000;
@@ -183,6 +187,9 @@ static void loadFullConfigFromPrefs() {
 
   cfgAutoStart = prefs.getBool("autoStart", cfgAutoStart);
   cfgAutoEndRun = prefs.getBool("autoEnd", cfgAutoEndRun);
+  cfgShiftLightEnable = prefs.getBool("shiftEn", cfgShiftLightEnable);
+  u = prefs.getUInt("shiftRpm", cfgShiftRpm); if (u >= 500 && u <= 20000) cfgShiftRpm = u;
+  u = prefs.getUInt("shiftBlink", cfgShiftBlinkRpm); if (u >= 500 && u <= 20000) cfgShiftBlinkRpm = u;
 
   u = prefs.getUInt("smooth", cfgSmoothingLevel);
   if (u <= 2) cfgSmoothingLevel = (uint8_t)u;
@@ -205,6 +212,9 @@ static bool persistConfigKey(const String &key) {
   if (key == "AA") return prefs.putFloat("autoAlpha", cfgAutoAlpha) > 0;
   if (key == "AS") return prefs.putBool("autoStart", cfgAutoStart) > 0;
   if (key == "AE") return prefs.putBool("autoEnd", cfgAutoEndRun) > 0;
+  if (key == "SL") return prefs.putBool("shiftEn", cfgShiftLightEnable) > 0;
+  if (key == "SR") return prefs.putUInt("shiftRpm", cfgShiftRpm) > 0;
+  if (key == "SB") return prefs.putUInt("shiftBlink", cfgShiftBlinkRpm) > 0;
   if (key == "SM") return prefs.putUInt("smooth", cfgSmoothingLevel) > 0;
   return false;
 }
@@ -226,6 +236,9 @@ static void saveFullConfigToPrefs() {
   prefs.putFloat("autoAlpha", cfgAutoAlpha);
   prefs.putBool("autoStart", cfgAutoStart);
   prefs.putBool("autoEnd", cfgAutoEndRun);
+  prefs.putBool("shiftEn", cfgShiftLightEnable);
+  prefs.putUInt("shiftRpm", cfgShiftRpm);
+  prefs.putUInt("shiftBlink", cfgShiftBlinkRpm);
   prefs.putUInt("smooth", cfgSmoothingLevel);
 
   // Write version last so a brand-new migration is only considered complete
@@ -288,6 +301,15 @@ static bool setConfigValue(const String &key, const String &value) {
   } else if (key == "AE") {
     if (!parseLongStrict(value, n) || (n != 0 && n != 1)) return false;
     cfgAutoEndRun = (n == 1);
+  } else if (key == "SL") {
+    if (!parseLongStrict(value, n) || (n != 0 && n != 1)) return false;
+    cfgShiftLightEnable = (n == 1);
+  } else if (key == "SR") {
+    if (!parseLongStrict(value, n) || n < 500 || n > 20000) return false;
+    cfgShiftRpm = (uint32_t)n;
+  } else if (key == "SB") {
+    if (!parseLongStrict(value, n) || n < 500 || n > 20000) return false;
+    cfgShiftBlinkRpm = (uint32_t)n;
   } else if (key == "SM") {
     if (!parseLongStrict(value, n) || n < 0 || n > 2) return false;
     cfgSmoothingLevel = (uint8_t)n;
@@ -346,7 +368,7 @@ static void notifyFullConfig() {
       sizeof(out),
       "CFG;WD=%.3f;IJ=%.4f;MR=%lu;MS=%.3f;"
       "V0=%.3f;A0=%.3f;V1=%.3f;A1=%.3f;DE=%.3f;"
-      "IC=%u;RF=%lu;AS=%u;AE=%u;SP=%.3f;HP=%.3f;AA=%.3f;SM=%u\n",
+      "IC=%u;RF=%lu;AS=%u;AE=%u;SP=%.3f;HP=%.3f;AA=%.3f;SL=%u;SR=%lu;SB=%lu;SM=%u\n",
       cfgWheelDiameterMm,
       cfgVehicleInertiaJ,
       (unsigned long)cfgMaxRpmDisplay,
@@ -363,6 +385,9 @@ static void notifyFullConfig() {
       cfgAutoSpeed,
       cfgAutoHp,
       cfgAutoAlpha,
+      cfgShiftLightEnable ? 1U : 0U,
+      (unsigned long)cfgShiftRpm,
+      (unsigned long)cfgShiftBlinkRpm,
       (unsigned int)cfgSmoothingLevel
   );
   bleNotifyChunks(statusChar, out);
@@ -372,19 +397,23 @@ void dynoPublishSample(
     uint32_t timeMs,
     float wheelRPM,
     float engineRPM,
-    float afrVoltage
+    float afrVoltage,
+    uint32_t hallPulseCount,
+    uint32_t hallPulseMs
 ) {
   if (!deviceConnected || liveChar == nullptr) return;
 
-  char line[112];
+  char line[144];
   snprintf(
       line,
       sizeof(line),
-      "D,%lu,%.2f,%.2f,%.3f\n",
+      "D,%lu,%.2f,%.2f,%.3f,%lu,%lu\n",
       (unsigned long)timeMs,
       wheelRPM,
       engineRPM,
-      afrVoltage
+      afrVoltage,
+      (unsigned long)hallPulseCount,
+      (unsigned long)hallPulseMs
   );
   bleNotifyChunks(liveChar, line);
 }
@@ -656,12 +685,14 @@ volatile uint32_t hallLastValidPeriodUsISR = 0;
 volatile uint32_t hallNewPeriodUsISR = 0;
 volatile bool hallNewPeriodReadyISR = false;
 volatile uint32_t hallRejectedPulseCountISR = 0;
+volatile uint32_t hallValidPulseCountISR = 0;
 
 void IRAM_ATTR hallISR() {
   uint32_t now = micros();
 
   if (hallLastValidEdgeUsISR == 0) {
     hallLastValidEdgeUsISR = now;
+    hallValidPulseCountISR++;
     return;
   }
 
@@ -690,6 +721,7 @@ void IRAM_ATTR hallISR() {
   hallNewPeriodReadyISR = true;
   hallLastValidPeriodUsISR = dt;
   hallLastValidEdgeUsISR = now;
+  hallValidPulseCountISR++;
 }
 
 // ============================================================================
@@ -862,6 +894,10 @@ void setup() {
   // Engine pickup / opto / open collector.
   pinMode(ENGINE_PIN, INPUT_PULLUP);
 
+  // Shift light output: LOW=0V, HIGH=3.3V.
+  pinMode(SHIFT_LIGHT_PIN, OUTPUT);
+  digitalWrite(SHIFT_LIGHT_PIN, LOW);
+
   // AFR ADC.
   analogReadResolution(12);
 #if defined(ARDUINO_ARCH_ESP32)
@@ -890,7 +926,7 @@ void setup() {
   Serial.println("========================================");
   Serial.println("[BOOT] BT Speed Dyno Hardware");
   Serial.println("[BOOT] ESP32-S3 firmware started");
-  Serial.println("[BOOT] GPIO18=Wheel Hall | GPIO16=Engine RPM | GPIO4=AFR");
+  Serial.println("[BOOT] GPIO18=Wheel Hall | GPIO16=Engine RPM | GPIO6=Shift Light");
   Serial.printf(
       "[BOOT] Engine RPM pulse filter = %lu us\n",
       (unsigned long)engineFilterUs
@@ -923,6 +959,31 @@ void setup() {
   Serial.println(
       "HEADER,D,timeMs,wheelRPM,engineRPM,afrVoltage"
   );
+}
+
+static void updateShiftLight(float engineRpm, unsigned long nowMs) {
+  static bool blinkState = false;
+  static unsigned long lastBlinkMs = 0;
+
+  if (!cfgShiftLightEnable) {
+    digitalWrite(SHIFT_LIGHT_PIN, LOW);
+    blinkState = false;
+    lastBlinkMs = nowMs;
+    return;
+  }
+
+  if (engineRpm >= (float)cfgShiftBlinkRpm) {
+    if ((uint32_t)(nowMs - lastBlinkMs) >= 100UL) {
+      lastBlinkMs = nowMs;
+      blinkState = !blinkState;
+      digitalWrite(SHIFT_LIGHT_PIN, blinkState ? HIGH : LOW);
+    }
+    return;
+  }
+
+  blinkState = false;
+  lastBlinkMs = nowMs;
+  digitalWrite(SHIFT_LIGHT_PIN, engineRpm >= (float)cfgShiftRpm ? HIGH : LOW);
 }
 
 // ============================================================================
@@ -971,6 +1032,8 @@ void loop() {
   if (nowMs - lastEngPulseMs > ENGINE_TIMEOUT_MS) {
     engineRPMFiltered = 0.0f;
   }
+
+  updateShiftLight(engineRPMFiltered, nowMs);
 
   // Wheel timeout also resets incomplete Startup-5 state.
   uint32_t hallLastEdgeSnapshotUs = 0;
@@ -1039,12 +1102,20 @@ void loop() {
     Serial.print(",");
     Serial.println(afrVoltFiltered, 3);
 
-    // Publish the same sample to DynoTL Mobile over BLE.
+    // Publish filtered values plus raw Hall pulse telemetry.
+    uint32_t hallPulseCountSnapshot = 0;
+    uint32_t hallPulseMsSnapshot = 0;
+    noInterrupts();
+    hallPulseCountSnapshot = hallValidPulseCountISR;
+    hallPulseMsSnapshot = hallLastValidEdgeUsISR / 1000UL;
+    interrupts();
     dynoPublishSample(
         nowMs,
         rollerRPMOutput,
         engineRPMFiltered,
-        afrVoltFiltered
+        afrVoltFiltered,
+        hallPulseCountSnapshot,
+        hallPulseMsSnapshot
     );
 
     lastSampleMs = nowMs;
