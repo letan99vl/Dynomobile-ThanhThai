@@ -404,7 +404,7 @@ static void notifyFullConfig() {
   bleNotifyChunks(statusChar, out);
 }
 
-void dynoPublish201Pulse(uint32_t pulseCount, uint32_t pulseMs) {
+void dynoPublish201Pulse(uint32_t pulseCount, uint32_t pulseUs) {
   if (!deviceConnected || liveChar == nullptr) return;
 
   char line[64];
@@ -413,7 +413,7 @@ void dynoPublish201Pulse(uint32_t pulseCount, uint32_t pulseMs) {
       sizeof(line),
       "P,%lu,%lu\n",
       (unsigned long)pulseCount,
-      (unsigned long)pulseMs
+      (unsigned long)pulseUs
   );
   bleNotifyChunks(liveChar, line);
 }
@@ -1102,10 +1102,9 @@ void loop() {
 
     if (!run201PulseReady) break;
 
-    uint32_t pulseAgeUs =
-        (uint32_t)(micros() - run201PulseEdgeUs);
-    uint32_t pulseMs = nowMs - pulseAgeUs / 1000UL;
-    dynoPublish201Pulse(run201PulseCount, pulseMs);
+    // Publish the exact ISR micros() timestamp. Do not quantize to millis();
+    // 201 m speed uses pulse-to-pulse time and needs sub-millisecond precision.
+    dynoPublish201Pulse(run201PulseCount, run201PulseEdgeUs);
   }
 
   if (engPeriodReady && PULSES_PER_REV_ENGINE > 0.0f) {
