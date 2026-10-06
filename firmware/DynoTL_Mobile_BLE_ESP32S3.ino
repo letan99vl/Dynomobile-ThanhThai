@@ -393,6 +393,20 @@ static void notifyFullConfig() {
   bleNotifyChunks(statusChar, out);
 }
 
+void dynoPublish201Pulse(uint32_t pulseCount, uint32_t pulseMs) {
+  if (!deviceConnected || liveChar == nullptr) return;
+
+  char line[64];
+  snprintf(
+      line,
+      sizeof(line),
+      "P,%lu,%lu\n",
+      (unsigned long)pulseCount,
+      (unsigned long)pulseMs
+  );
+  bleNotifyChunks(liveChar, line);
+}
+
 void dynoPublishSample(
     uint32_t timeMs,
     float wheelRPM,
@@ -436,6 +450,24 @@ class DynoBleCommandCallbacks : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic *characteristic) override {
     String cmd = characteristic->getValue().c_str();
     cmd.trim();
+
+    if (cmd.equalsIgnoreCase("201ARM")) {
+      noInterrupts();
+      run201PulseEventPendingISR = false;
+      run201ArmISR = true;
+      interrupts();
+      bleNotifyChunks(statusChar, "201ARMED\n");
+      return;
+    }
+
+    if (cmd.equalsIgnoreCase("201DISARM")) {
+      noInterrupts();
+      run201ArmISR = false;
+      run201PulseEventPendingISR = false;
+      interrupts();
+      bleNotifyChunks(statusChar, "201DISARMED\n");
+      return;
+    }
 
     if (cmd.equalsIgnoreCase("CONFIG?")) {
       notifyFullConfig();
@@ -686,6 +718,10 @@ volatile uint32_t hallNewPeriodUsISR = 0;
 volatile bool hallNewPeriodReadyISR = false;
 volatile uint32_t hallRejectedPulseCountISR = 0;
 volatile uint32_t hallValidPulseCountISR = 0;
+volatile bool run201ArmISR = false;
+volatile bool run201PulseEventPendingISR = false;
+volatile uint32_t run201PulseCountISR = 0;
+volatile uint32_t run201PulseEdgeUsISR = 0;
 
 void IRAM_ATTR hallISR() {
   uint32_t now = micros();
@@ -693,6 +729,12 @@ void IRAM_ATTR hallISR() {
   if (hallLastValidEdgeUsISR == 0) {
     hallLastValidEdgeUsISR = now;
     hallValidPulseCountISR++;
+    if (run201ArmISR) {
+      run201ArmISR = false;
+      run201PulseEventPendingISR = true;
+      run201PulseCountISR = hallValidPulseCountISR;
+      run201PulseEdgeUsISR = now;
+    }
     return;
   }
 
@@ -722,6 +764,12 @@ void IRAM_ATTR hallISR() {
   hallLastValidPeriodUsISR = dt;
   hallLastValidEdgeUsISR = now;
   hallValidPulseCountISR++;
+  if (run201ArmISR) {
+    run201ArmISR = false;
+    run201PulseEventPendingISR = true;
+    run201PulseCountISR = hallValidPulseCountISR;
+    run201PulseEdgeUsISR = now;
+  }
 }
 
 // ============================================================================
@@ -1006,6 +1054,25 @@ void loop() {
 
   // Wheel RPM.
   updateRollerFromHall(nowMs);
+
+  // Dedicated 201 m start event: the first valid Hall pulse after 201ARM.
+  bool run201PulseReady = false;
+  uint32_t run201PulseCount = 0;
+  uint32_t run201PulseEdgeUs = 0;
+  noInterrupts();
+  if (run201PulseEventPendingISR) {
+    run201PulseEventPendingISR = false;
+    run201PulseReady = true;
+    run201PulseCount = run201PulseCountISR;
+    run201PulseEdgeUs = run201PulseEdgeUsISR;
+  }
+  interrupts();
+
+  if (run201PulseReady) {
+    uint32_t pulseAgeUs = (uint32_t)(micros() - run201PulseEdgeUs);
+    uint32_t pulseMs = nowMs - pulseAgeUs / 1000UL;
+    dynoPublish201Pulse(run201PulseCount, pulseMs);
+  }
 
   if (engPeriodReady && PULSES_PER_REV_ENGINE > 0.0f) {
     engPeriodReady = false;
