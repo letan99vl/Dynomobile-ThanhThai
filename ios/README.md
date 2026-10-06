@@ -8,7 +8,7 @@ Native iOS shell for 37TSR Dyno.
 - Bundle ID: `vn.tsr37.dyno`
 - Version: `1.0 (1)`
 - Minimum iOS: 15.0
-- Current bundled UI target: PB 1.004
+- Current bundled UI target: current visible PB from index.html
 
 Build locally on macOS:
 
