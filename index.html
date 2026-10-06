@@ -707,6 +707,161 @@ body{background:#ecebe8!important}
   #exhaustBgDirect{width:92vw;opacity:.38}
 }
 </style>
+
+<style id="37tsr-test201-fit-screen">
+/* 201 m dashboard: all major panels visible in one landscape viewport */
+#test201{
+  overflow:hidden!important;
+  padding:4px!important;
+  height:100%!important;
+  min-height:0!important;
+}
+#test201 .test201-grid{
+  height:100%!important;
+  min-height:0!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr)!important;
+  grid-template-rows:minmax(108px,38%) minmax(0,62%)!important;
+  gap:4px!important;
+}
+#test201 .test201-grid>.card{
+  min-width:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  padding:5px!important;
+}
+#test201 .test201-live-card{grid-column:1;grid-row:1}
+#test201 .test201-splits-card{grid-column:2;grid-row:1}
+#test201 .test201-chart-card{
+  grid-column:1!important;
+  grid-row:2!important;
+  min-height:0!important;
+  padding:5px!important;
+  display:grid!important;
+  grid-template-rows:20px minmax(0,1fr)!important;
+}
+#test201 .test201-history-card{
+  grid-column:2!important;
+  grid-row:2!important;
+  min-height:0!important;
+  padding:5px!important;
+  display:grid!important;
+  grid-template-rows:18px minmax(0,1fr)!important;
+}
+#test201 .test201-title-row{gap:5px!important;align-items:center!important}
+#test201 .test201-title-row h2,
+#test201 .test201-splits-card h2,
+#test201 .test201-chart-card h2,
+#test201 .test201-history-card h2{
+  margin:0!important;
+  font-size:8px!important;
+  line-height:1!important;
+  letter-spacing:.35px!important;
+}
+#test201 .test201-title-row .note{display:none!important}
+#test201 .test201-dia{font-size:6px!important;gap:3px!important}
+#test201 .test201-dia input{
+  width:52px!important;
+  height:21px!important;
+  padding:0 3px!important;
+  font-size:8px!important;
+}
+#test201 .test201-controls{
+  margin:3px 0!important;
+  gap:3px!important;
+  flex-wrap:nowrap!important;
+}
+#test201 .test201-controls button{
+  height:23px!important;
+  min-width:54px!important;
+  padding:0 6px!important;
+  font-size:7px!important;
+}
+#test201 .test201-state{
+  min-height:21px!important;
+  height:21px!important;
+  padding:0 7px!important;
+  font-size:5.5px!important;
+  white-space:nowrap!important;
+}
+#test201 .test201-live-metrics{gap:3px!important}
+#test201 .test201-live-metrics .metric{
+  padding:3px!important;
+  border-radius:5px!important;
+}
+#test201 .test201-live-metrics .metric span{font-size:5.5px!important}
+#test201 .test201-live-metrics .metric b{
+  font-size:clamp(10px,2.7vh,16px)!important;
+  margin-top:1px!important;
+}
+#test201 .test201-live-metrics .metric em{font-size:5px!important;margin-top:0!important}
+
+#test201 .test201-splits-card{display:grid!important;grid-template-rows:14px minmax(0,1fr)!important}
+#test201 .test201-split-table{border-radius:5px!important;min-height:0!important}
+#test201 .split-row{
+  min-height:0!important;
+  height:auto!important;
+  grid-template-columns:1.06fr .84fr .92fr 1fr 1fr!important;
+}
+#test201 .split-row>*{
+  padding:2px 4px!important;
+  font-size:6px!important;
+  line-height:1.05!important;
+}
+#test201 .split-row b small{
+  font-size:4.5px!important;
+  margin-top:1px!important;
+}
+#test201 .split-head{min-height:15px!important}
+#test201 .split-head>*{font-size:4.8px!important}
+#test201 .split-row.final b{font-size:6.5px!important}
+
+#test201 .test201-chart-head{min-height:0!important}
+#test201 .test201-chart-legend{gap:7px!important;font-size:5px!important}
+#test201 .test201-chart-legend span{padding-left:10px!important}
+#test201 .test201-chart-legend span:before{width:7px!important}
+#test201 .test201-chart-wrap{
+  min-height:0!important;
+  height:100%!important;
+  overflow:hidden!important;
+}
+#test201 .test201-chart-wrap canvas{
+  width:100%!important;
+  height:100%!important;
+}
+
+#test201 .test201-history{
+  min-height:0!important;
+  max-height:none!important;
+  height:100%!important;
+  overflow:auto!important;
+  border-radius:5px!important;
+}
+#test201 .test201-history table{font-size:5.5px!important}
+#test201 .test201-history th,
+#test201 .test201-history td{
+  padding:3px 3px!important;
+  line-height:1.05!important;
+}
+
+@media(max-height:430px){
+  #test201{padding:3px!important}
+  #test201 .test201-grid{
+    grid-template-rows:minmax(96px,37%) minmax(0,63%)!important;
+    gap:3px!important;
+  }
+  #test201 .test201-grid>.card{padding:4px!important}
+  #test201 .test201-chart-card{grid-template-rows:16px minmax(0,1fr)!important}
+  #test201 .test201-history-card{grid-template-rows:15px minmax(0,1fr)!important}
+  #test201 .test201-controls button{height:20px!important}
+  #test201 .test201-state{height:19px!important;min-height:19px!important}
+  #test201 .test201-dia input{height:19px!important}
+  #test201 .test201-live-metrics .metric b{font-size:clamp(9px,2.5vh,14px)!important}
+  #test201 .split-row>*{padding:1px 3px!important;font-size:5.5px!important}
+  #test201 .split-head{min-height:13px!important}
+  #test201 .test201-history th,#test201 .test201-history td{padding:2px 3px!important}
+}
+</style>
 </head>
 <body>
 <img id="exhaustBgDirect" src="./assets/37tsr-exhaust-bg.webp?v=6" alt="" aria-hidden="true">
