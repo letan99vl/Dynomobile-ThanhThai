@@ -601,28 +601,16 @@ main,.chartpage,#settings,#test201,#live{
 html{background:#e9e8e5!important}
 body,#app{background:transparent!important}
 body{position:relative}
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  z-index:0;
-  pointer-events:none;
-  background-image:url("./assets/37tsr-exhaust-bg.webp");
-  background-repeat:no-repeat;
-  background-position:center 54%;
-  background-size:min(72vw,920px) auto;
-  opacity:.30;
-  filter:grayscale(.22) contrast(.96) brightness(1.04);
-}
-body::after{
-  content:"";
+#exhaustBgLayer{
   position:fixed;
   inset:0;
   z-index:0;
   pointer-events:none;
   background:
-    linear-gradient(180deg,rgba(255,255,255,.46),rgba(255,255,255,.15) 42%,rgba(255,255,255,.34)),
-    radial-gradient(circle at center,rgba(255,255,255,.02) 0 32%,rgba(255,255,255,.30) 78%,rgba(255,255,255,.48) 100%);
+    linear-gradient(180deg,rgba(255,255,255,.44),rgba(255,255,255,.14) 44%,rgba(255,255,255,.32)),
+    radial-gradient(circle at center,rgba(255,255,255,0) 0 34%,rgba(255,255,255,.22) 76%,rgba(255,255,255,.42) 100%),
+    url("./assets/37tsr-exhaust-bg.webp?v=2") center 54% / min(72vw,920px) auto no-repeat;
+  filter:grayscale(.18) contrast(.98) brightness(1.03);
 }
 #app{position:relative;z-index:1}
 header{position:relative;z-index:3}
@@ -634,11 +622,17 @@ header{position:relative;z-index:3}
   background:rgba(255,255,255,.34)!important;
 }
 @media(max-width:900px){
-  body::before{background-size:88vw auto;opacity:.25}
+  #exhaustBgLayer{
+    background:
+      linear-gradient(180deg,rgba(255,255,255,.46),rgba(255,255,255,.18) 44%,rgba(255,255,255,.34)),
+      radial-gradient(circle at center,rgba(255,255,255,0) 0 30%,rgba(255,255,255,.24) 76%,rgba(255,255,255,.46) 100%),
+      url("./assets/37tsr-exhaust-bg.webp?v=2") center 55% / 88vw auto no-repeat;
+  }
 }
 </style>
 </head>
 <body>
+<div id="exhaustBgLayer" aria-hidden="true"></div>
 <div id="app">
 <header>
  <div class="brand"><b>37TSR</b> <span>DYNO</span> <small id="buildTag" style="font:700 7px Arial;color:#777;margin-left:4px">2T</small></div>
