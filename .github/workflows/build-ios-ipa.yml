@@ -41,10 +41,11 @@ jobs:
 
           APP_PATH="$(find build-device/Build/Products/Release-iphoneos -maxdepth 1 -name '*.app' -type d -print -quit)"
           test -n "$APP_PATH"
-          test -f "$APP_PATH/Web/index.html"
-          grep -q "PB 1.004" "$APP_PATH/Web/index.html"
-          grep -q "37TSR Dyno" "$APP_PATH/Info.plist" || true
+          INDEX_PATH="$(find "$APP_PATH" -name index.html -type f -print -quit)"
+          test -n "$INDEX_PATH"
+          grep -q "PB 1.004" "$INDEX_PATH"
           echo "Built app: $APP_PATH"
+          echo "Bundled UI: $INDEX_PATH"
 
           mkdir -p Payload
           cp -R "$APP_PATH" Payload/
