@@ -49,8 +49,8 @@ html = html.replace(
     1,
 )
 
-if "PB 1.004" not in html:
-    raise RuntimeError("Expected PB 1.004 was not found in bundled UI")
+if not re.search(r"PB\s+\d+\.\d+", html):
+    raise RuntimeError("Visible PB tag was not found in bundled UI")
 
 (OUT / "index.html").write_text(html, encoding="utf-8")
 
@@ -61,4 +61,5 @@ if out_assets.exists():
 if assets.exists():
     shutil.copytree(assets, out_assets)
 
-print("Prepared local 37TSR iOS Web bundle at PB 1.004")
+m = re.search(r"PB\s+(\d+\.\d+)", html)
+print(f"Prepared local 37TSR iOS Web bundle at PB {m.group(1) if m else 'unknown'}")
