@@ -418,8 +418,8 @@ main,.chartpage,#settings,#test201{background:#f4f4f2!important}
 #live .classic-inner{fill:#f8f8f6;stroke:#222;stroke-width:2}
 #live .classic-tick{stroke:#111;stroke-width:3}
 #live .classic-tick.minor{stroke-width:1.4}
-#live .classic-label{fill:#111;font:700 16px Georgia,serif;text-anchor:middle;dominant-baseline:middle}
-#liveRpmArc.rpm-full-scale .classic-label{font:700 10px Arial,sans-serif!important}
+#live .classic-label{fill:#111;font:700 10px Arial,sans-serif;text-anchor:middle;dominant-baseline:middle}
+#liveRpmArc.rpm-full-scale .classic-label,#liveSpeedArc .classic-label{font:700 10px Arial,sans-serif!important}
 #live .classic-title{fill:#111;font:700 20px Georgia,serif;text-anchor:middle}
 #live .classic-unit{fill:#555;font:600 13px Georgia,serif;text-anchor:middle}
 #live .classic-value{fill:#111;font:700 24px Georgia,serif;text-anchor:middle}
@@ -1533,7 +1533,7 @@ cfgIds.forEach(function(id){$(id).addEventListener('change',function(){save(fals
  'use strict';
  var mount=document.getElementById('livePcMount');
  if(!mount)return;
- function getText(path){return fetch(path+'?v=37tsr-gauge-20261006-3').then(function(r){if(!r.ok)throw new Error(path+' '+r.status);return r.text()})}
+ function getText(path){return fetch(path+'?v=37tsr-gauge-20261006-4').then(function(r){if(!r.ok)throw new Error(path+' '+r.status);return r.text()})}
  Promise.all([
    getText('live/head.html'),getText('live/rpm.html'),getText('live/kpis.html'),getText('live/speed.html'),getText('live/info.html')
  ]).then(function(p){
@@ -1590,8 +1590,8 @@ cfgIds.forEach(function(id){$(id).addEventListener('change',function(){save(fals
    }
    function setArc(el,value,maxValue){
      if(!el||!el._led)return;var n=Number(value);if(!Number.isFinite(n)||n<0)n=0;var max=Number(maxValue)||1;
-     var fraction=Math.max(0,Math.min(1,n/max)),deg=-125+250*fraction;
-     if(el._led.needle)el._led.needle.setAttribute('transform','rotate('+deg.toFixed(2)+' 260 220)');
+     var fraction=Math.max(0,Math.min(1,n/max)),dialDeg=-125+250*fraction,needleDeg=dialDeg+90;
+     if(el._led.needle)el._led.needle.setAttribute('transform','rotate('+needleDeg.toFixed(2)+' 260 220)');
      if(el._led.value)el._led.value.textContent=String(Math.round(n));
      if(el._led.svg)el._led.svg.setAttribute('aria-label',el.dataset.title+': '+Math.round(n))
    }
