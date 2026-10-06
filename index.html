@@ -680,8 +680,36 @@ main,.chartpage,#settings,#test201,#live{background:transparent!important}
   }
 }
 </style>
+
+<style id="37tsr-direct-bg-img">
+#exhaustBgDirect{
+  position:fixed;
+  left:50%;
+  top:54%;
+  width:min(78vw,980px);
+  height:auto;
+  transform:translate(-50%,-50%);
+  z-index:0;
+  opacity:.42;
+  filter:grayscale(.08) contrast(1.03) brightness(1.01);
+  pointer-events:none;
+  user-select:none;
+}
+#app{position:relative!important;z-index:1!important;background:transparent!important}
+body{background:#ecebe8!important}
+#exhaustBgLayer{display:none!important}
+#live::before{display:none!important}
+#live .live-arc-card{background:rgba(255,255,255,.08)!important}
+#live .live-kpi{background:rgba(255,255,255,.12)!important}
+#live .classic-face{fill:rgba(255,255,255,.06)!important}
+#live .classic-inner{fill:rgba(255,255,255,.025)!important}
+@media(max-width:900px){
+  #exhaustBgDirect{width:92vw;opacity:.38}
+}
+</style>
 </head>
 <body>
+<img id="exhaustBgDirect" src="./assets/37tsr-exhaust-bg.webp?v=6" alt="" aria-hidden="true">
 <div id="exhaustBgLayer" aria-hidden="true"></div>
 <div id="app">
 <header>
