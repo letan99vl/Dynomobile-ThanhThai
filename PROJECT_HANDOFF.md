@@ -4,8 +4,8 @@
 - Project: 37TSR Dyno / Dynomobile-ThanhThai
 - Repository: letan99vl/Dynomobile-ThanhThai
 - GitHub Pages: https://letan99vl.github.io/Dynomobile-ThanhThai/
-- Current visible web PB: **PB 1.005**
-- Main branch current handoff baseline: **d1dd7169a7ad58efaa3931e35434c705b6585f12**
+- Current visible web PB: **PB 1.006**
+- Main branch current handoff baseline: **1573aa09d15aa73fe3d8574a5c4d728e6639ebce**
 - Deployment mode: GitHub Pages **Deploy from branch -> main / root**.
 - The old duplicate custom Pages workflow was removed. Do not add a second Pages deploy workflow unless intentionally changing the deployment model.
 
@@ -13,10 +13,10 @@
 Every user-visible web/app change MUST increment the PB shown in the header:
 `2T · PB x.xxx`
 
-Current PB: `1.005`
+Current PB: `1.006`
 
 Recommended sequence:
-`1.005 -> 1.006 -> 1.007 ...`
+`1.006 -> 1.007 -> 1.008 ...`
 
 Whenever PB changes:
 1. Update the header `#buildTag` in `index.html`.
@@ -328,3 +328,25 @@ Unsigned IPA:
 The iOS bundle preparation script copies the current web UI and inlines the LIVE fragments so WKWebView does not depend on local `fetch(file://...)`.
 
 - PB 1.005: removed two accidental literal \\n text tokens from HTML markup; one had been rendered by Chrome at the top-left above the app header.
+
+
+## SIM shift-light hardware test
+PB 1.006 + current ESP32-S3 firmware allow the web SIM button to drive the real shift-light output on GPIO6 while BLE remains connected.
+
+Behavior:
+- SIM dyno data remains generated in the web app.
+- Real LIVE BLE telemetry is ignored while SIM is active, so real sensor packets do not mix into the simulated pull.
+- If BLE hardware is connected, the web sends `SIMRPM <rpm>` to ESP32 about every 100 ms.
+- Firmware uses that temporary SIM RPM only as the source for `updateShiftLight()`.
+- Real engine RPM telemetry is not overwritten.
+- NVS settings are not changed.
+- `SIMRPM OFF` restores the real RPM source immediately.
+- Firmware also has a 500 ms timeout; if SIM commands stop, shift-light control automatically falls back to real engine RPM.
+- BLE disconnect clears the override and forces GPIO6 LOW.
+
+This means a connected ESP32-S3 can physically test:
+- below Light ON RPM -> GPIO6 LOW
+- Light ON RPM to Blink RPM -> GPIO6 steady HIGH
+- at/above Blink RPM -> GPIO6 blinks
+
+The normal Shift Light Enable setting must still be ON.
