@@ -69,6 +69,13 @@ uint32_t cfgShiftRpm = 10000;
 uint32_t cfgShiftBlinkRpm = 12000;
 uint8_t cfgSmoothingLevel = 1;
 
+// Temporary SIM-only RPM source for testing the physical shift light on GPIO6.
+// Never stored in NVS and never changes the real engine RPM telemetry.
+bool simShiftOverrideActive = false;
+float simShiftOverrideRpm = 0.0f;
+uint32_t simShiftOverrideLastMs = 0;
+const uint32_t SIM_SHIFT_OVERRIDE_TIMEOUT_MS = 500;
+
 const uint32_t ROLLER_ABS_MIN_PERIOD_US = 6000;
 const uint32_t ROLLER_EARLY_GATE_PERCENT = 45;
 
@@ -451,6 +458,9 @@ class DynoBleServerCallbacks : public BLEServerCallbacks {
 
   void onDisconnect(BLEServer *s) override {
     deviceConnected = false;
+    simShiftOverrideActive = false;
+    simShiftOverrideRpm = 0.0f;
+    digitalWrite(SHIFT_LIGHT_PIN, LOW);
     delay(120);
     s->getAdvertising()->start();
     Serial.println("[BT Speed Dyno] BLE advertising restarted");
@@ -481,6 +491,29 @@ class DynoBleCommandCallbacks : public BLECharacteristicCallbacks {
       run201PulseQTailISR = 0;
       interrupts();
       bleNotifyChunks(statusChar, "201DISARMED\n");
+      return;
+    }
+
+    if (cmd.startsWith("SIMRPM ")) {
+      String value = cmd.substring(7);
+      value.trim();
+
+      if (value.equalsIgnoreCase("OFF")) {
+        simShiftOverrideActive = false;
+        simShiftOverrideRpm = 0.0f;
+        digitalWrite(SHIFT_LIGHT_PIN, LOW);
+        return;
+      }
+
+      long rpm = value.toInt();
+      if (rpm < 0 || rpm > (long)MAX_RPM_ENGINE) {
+        bleNotifyChunks(statusChar, "ERR SIMRPM VALUE\n");
+        return;
+      }
+
+      simShiftOverrideRpm = (float)rpm;
+      simShiftOverrideLastMs = millis();
+      simShiftOverrideActive = true;
       return;
     }
 
@@ -1133,7 +1166,21 @@ void loop() {
     engineRPMFiltered = 0.0f;
   }
 
-  updateShiftLight(engineRPMFiltered, nowMs);
+  float shiftLightRpm = engineRPMFiltered;
+
+  if (simShiftOverrideActive) {
+    if ((uint32_t)(nowMs - simShiftOverrideLastMs) <=
+        SIM_SHIFT_OVERRIDE_TIMEOUT_MS) {
+      shiftLightRpm = simShiftOverrideRpm;
+    } else {
+      // Fail-safe: if the app stops sending SIM RPM, immediately fall back
+      // to the real engine RPM source.
+      simShiftOverrideActive = false;
+      simShiftOverrideRpm = 0.0f;
+    }
+  }
+
+  updateShiftLight(shiftLightRpm, nowMs);
 
   // Wheel timeout also resets incomplete Startup-5 state.
   uint32_t hallLastEdgeSnapshotUs = 0;
